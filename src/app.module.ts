@@ -1,23 +1,35 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TempModule } from './temp/temp.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
+const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
   imports: [
     TempModule,
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql', //数据库类型
-    //   username: 'root', //账号
-    //   password: '123456', //密码
-    //   host: 'localhost', //host
-    //   port: 3306, //端口
-    //   database: 'portal', //库名
-    //   //entities: [__dirname + '/**/*.entity{.ts,.js}'], //实体文件
-    //   synchronize: true, //synchronize字段代表是否自动将实体类同步到数据库
-    //   retryDelay: 500, //重试连接数据库间隔
-    //   retryAttempts: 10, //重试连接数据库的次数
-    //   autoLoadEntities: true, //如果为true,将自动加载实体 forFeature()方法注册的每个实体都将自动添加到配置对象的实体数组中
-    // }),
+    ConfigModule.forRoot({
+      envFilePath,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const isDev = configService.get('STAGE') === 'dev';
+
+        return {
+          type: 'mysql',
+          username: configService.get('DB_USER_NAME'),
+          password: configService.get('DB_PASSWORD'),
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          database: configService.get('DB_DATABASE'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: isDev,
+          autoLoadEntities: true,
+        };
+      },
+    }),
   ],
   controllers: [],
   providers: [],

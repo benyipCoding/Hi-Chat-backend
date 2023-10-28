@@ -9,6 +9,7 @@ export class LoggerMiddleware implements NestMiddleware {
     const url = req.baseUrl;
     const body = JSON.stringify(req.body);
     const params = JSON.stringify(req.params);
+    // IPv6格式转成IPv4
     const client = req.ip.startsWith('::ffff:')
       ? req.ip.replace('::ffff:', '')
       : req.ip;
