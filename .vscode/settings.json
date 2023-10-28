@@ -1,0 +1,10 @@
+{
+  // 保存到额时候用使用prettier进行格式化
+  "editor.formatOnSave": true,
+  // 是否要有分号
+  "prettier.semi": true,
+  // 使用单引号
+  "prettier.singleQuote": true,
+  // 默认使用prittier作为格式化工具
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
