@@ -1,13 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { TempModule } from './temp/temp.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
   imports: [
-    TempModule,
     ConfigModule.forRoot({
       envFilePath,
     }),
@@ -30,6 +30,8 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
         };
       },
     }),
+    AuthModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],
