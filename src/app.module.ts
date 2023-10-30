@@ -10,6 +10,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
   imports: [
     ConfigModule.forRoot({
       envFilePath,
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
