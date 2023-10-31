@@ -6,6 +6,8 @@ import { setupSwagger } from './utils/swagger';
 import { GlobalFilter } from './common/exceptions/global.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalInterceptor } from './common/interceptors/global.interceptor';
+// import * as passport from 'passport';
+// import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
