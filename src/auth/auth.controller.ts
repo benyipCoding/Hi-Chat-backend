@@ -6,15 +6,15 @@ import {
   HttpStatus,
   Req,
   Get,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { SignInDto } from './dtos/signIn.dto';
+// import { SignInDto } from './dtos/signIn.dto';
 import { Request } from 'express';
-import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+// import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 
 @ApiTags('Authentication Module')
 @Controller('auth')
@@ -31,18 +31,18 @@ export class AuthController {
     return this.userService.createUser(createUserDto);
   }
 
-  @Post('signIn')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'SignIn' })
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto);
-  }
+  // @Post('signIn')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'SignIn' })
+  // signIn(@Body() signInDto: SignInDto) {
+  //   return this.authService.signIn(signInDto);
+  // }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'test-auth' })
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   getProfile(@Req() request: Request) {
     console.log(5);
     return this.authService.getProfile(request);

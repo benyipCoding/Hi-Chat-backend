@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TempModule } from './temp/temp.module';
+import { PassportModule } from '@nestjs/passport';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -13,6 +14,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
       envFilePath,
       isGlobal: true,
     }),
+    PassportModule.register({ session: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
