@@ -6,8 +6,7 @@ import { setupSwagger } from './utils/swagger';
 import { GlobalFilter } from './common/exceptions/global.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalInterceptor } from './common/interceptors/global.interceptor';
-// import * as passport from 'passport';
-// import * as session from 'express-session';
+import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -23,7 +22,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new GlobalInterceptor());
-
+  app.use(passport.initialize());
   setupSwagger(app);
 
   const configService = app.get(ConfigService);

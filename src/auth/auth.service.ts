@@ -23,6 +23,9 @@ export class AuthService {
       where: {
         name: userName,
       },
+      select: {
+        password: true,
+      },
     });
 
     if (

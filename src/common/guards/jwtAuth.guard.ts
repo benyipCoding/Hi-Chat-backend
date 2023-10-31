@@ -4,15 +4,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   async canActivate(context: ExecutionContext) {
     // console.log(1);
-    const res = (await super.canActivate(context)) as boolean;
+    await super.canActivate(context);
     // console.log(4);
-    // await super.logIn(request);
-    return res;
+    const request: Request = context.switchToHttp().getRequest();
+    return request.isAuthenticated();
   }
 
   handleRequest(

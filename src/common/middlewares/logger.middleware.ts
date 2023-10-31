@@ -11,9 +11,7 @@ export class LoggerMiddleware implements NestMiddleware {
     const client = req.ip.startsWith('::ffff:')
       ? req.ip.replace('::ffff:', '')
       : req.ip;
-    logger.debug(
-      `FROM ${client} [${method}] ${url} ${req.headers.authorization}`,
-    );
+    logger.debug(`FROM ${client} [${method}] ${url}`);
     next();
   }
 }
