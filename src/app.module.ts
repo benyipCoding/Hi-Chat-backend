@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { TempModule } from './temp/temp.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -33,6 +34,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     }),
     AuthModule,
     UserModule,
+    TempModule,
   ],
   controllers: [],
   providers: [],

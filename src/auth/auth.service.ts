@@ -6,8 +6,8 @@ import { Repository } from 'typeorm';
 import { comparePassword } from 'src/utils/helpers';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signIn(signInDto: SignInDto, res: Response) {
+  async signIn(signInDto: SignInDto) {
     const { userName, password } = signInDto;
     const existingUser = await this.userRepository.findOne({
       where: {
@@ -43,10 +43,10 @@ export class AuthService {
       expiresIn: expireTime * 24,
     });
 
-    res.cookie('hi_chat_access_token', accessToken, {
-      expires: new Date(Date.now() + expireTime * 1000),
-    });
-
     return { accessToken, refreshToken };
+  }
+
+  getProfile(request: Request) {
+    return request.user;
   }
 }

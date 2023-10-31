@@ -8,7 +8,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
-// import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -17,12 +16,14 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: {
-          expiresIn: configService.get<number>('ACCESS_TOKEN_TTL'),
-        },
-      }),
+      useFactory: (configService: ConfigService) => {
+        return {
+          secret: configService.get('JWT_SECRET'),
+          signOptions: {
+            expiresIn: +configService.get('ACCESS_TOKEN_TTL'),
+          },
+        };
+      },
     }),
     TypeOrmModule.forFeature([User]),
   ],

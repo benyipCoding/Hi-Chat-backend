@@ -7,14 +7,12 @@ export class LoggerMiddleware implements NestMiddleware {
     const logger = new Logger('Incomming');
     const method = req.method;
     const url = req.baseUrl;
-    const body = JSON.stringify(req.body);
-    const params = JSON.stringify(req.params);
     // IPv6格式转成IPv4
     const client = req.ip.startsWith('::ffff:')
       ? req.ip.replace('::ffff:', '')
       : req.ip;
     logger.debug(
-      `FROM ${client} [${method}] ${url} Body:${body} Params:${params}`,
+      `FROM ${client} [${method}] ${url} ${req.headers.authorization}`,
     );
     next();
   }
