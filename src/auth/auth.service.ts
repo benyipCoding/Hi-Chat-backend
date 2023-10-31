@@ -7,7 +7,6 @@ import { comparePassword } from 'src/utils/helpers';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -47,9 +46,5 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
-  }
-
-  getProfile(request: Request) {
-    return request.user;
   }
 }
