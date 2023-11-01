@@ -22,6 +22,6 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'fetch userInfo' })
   getUserProfile(@Req() request: Request) {
-    return request.user;
+    return { ...request.user, id: undefined };
   }
 }

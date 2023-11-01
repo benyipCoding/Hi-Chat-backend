@@ -16,7 +16,7 @@ export class GlobalFilter<T extends HttpException> implements ExceptionFilter {
 
     res.status(status).send({
       status: status,
-      data: exception.getResponse(),
+      data: exception.message,
       timeStamp: new Date().toISOString(),
       path: req.url,
     });

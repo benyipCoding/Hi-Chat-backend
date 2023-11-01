@@ -45,6 +45,9 @@ export class AuthService {
       expiresIn: expireTime * 24,
     });
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
