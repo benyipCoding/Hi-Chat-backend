@@ -20,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: configService.get('ACCESS_TOKEN_TTL'),
+            expiresIn: +configService.get('ACCESS_TOKEN_TTL'),
           },
         };
       },

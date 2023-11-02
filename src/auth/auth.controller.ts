@@ -4,6 +4,7 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  // UseGuards,
   // Req,
   // Get,
   // UseGuards,
@@ -13,6 +14,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dtos/signIn.dto';
+// import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 // import { Request } from 'express';
 // import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 
@@ -32,6 +34,7 @@ export class AuthController {
   }
 
   @Post('signIn')
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'SignIn' })
   signIn(@Body() signInDto: SignInDto) {
