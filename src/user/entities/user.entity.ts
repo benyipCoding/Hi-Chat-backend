@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Conversation } from 'src/conversation/entities/conversation.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -18,4 +19,7 @@ export class User {
 
   @Column({ nullable: true })
   avatar: string;
+
+  @ManyToMany(() => Conversation, (c) => c.members)
+  conversations: Conversation;
 }
