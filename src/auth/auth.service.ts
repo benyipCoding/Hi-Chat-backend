@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignInDto } from './dtos/signIn.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/db/entities/user.entity';
 import { Repository } from 'typeorm';
 import { comparePassword } from 'src/utils/helpers';
 import { JwtPayload } from './interfaces';
