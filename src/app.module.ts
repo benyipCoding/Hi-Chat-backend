@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConversationModule } from './conversation/conversation.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -35,6 +36,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     AuthModule,
     UserModule,
     ConversationModule,
+    TransactionModule,
   ],
   controllers: [],
   providers: [],

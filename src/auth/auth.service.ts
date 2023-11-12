@@ -24,6 +24,7 @@ export class AuthService {
       },
       select: {
         password: true,
+        id: true,
       },
     });
 
@@ -34,12 +35,11 @@ export class AuthService {
       throw new UnauthorizedException('Please check your credentials');
 
     const payload: JwtPayload = {
-      name: userName,
       sub: existingUser.id,
+      name: userName,
     };
 
     const expireTime = this.configService.get<number>('ACCESS_TOKEN_TTL');
-
     const accessToken = await this.jwtService.sign(payload);
     const refreshToken = await this.jwtService.sign(payload, {
       expiresIn: expireTime * 24,

@@ -31,4 +31,6 @@ export class UserService {
     const newUser = await this.userRepository.create(payload);
     return this.userRepository.save(newUser);
   }
+
+  getFriendList() {}
 }

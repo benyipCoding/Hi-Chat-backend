@@ -46,6 +46,9 @@ export class User {
   @ManyToMany(() => Message, (message) => message.seenByUsers)
   seenMessages: Message[];
 
-  @Column()
+  @Column({ nullable: true })
   refresh_token: string;
+
+  @Column('simple-array', { nullable: true })
+  friend_ids: string[];
 }
