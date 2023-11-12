@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../db/entities/user.entity';
 import { Repository } from 'typeorm';
 import { hashPassword } from 'src/utils/helpers';
+import { Request } from 'express';
 
 @Injectable()
 export class UserService {
@@ -32,5 +33,14 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
-  getFriendList() {}
+  async getFriendList(request: Request) {
+    const currentUser = request.user as User;
+    if (!currentUser.friend_ids) return null;
+    const result = await this.userRepository
+      .createQueryBuilder('u')
+      .select(['u.name', 'u.email', 'u.avatar'])
+      .where('u.id IN (:...ids)', { ids: currentUser.friend_ids })
+      .getMany();
+    return result;
+  }
 }

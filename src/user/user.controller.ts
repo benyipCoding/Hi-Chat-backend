@@ -34,8 +34,8 @@ export class UserController {
   @Get('friendList')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'fetch friendList' })
-  getFriendList() {
-    return this.userService.getFriendList();
+  getFriendList(@Req() request: Request) {
+    return this.userService.getFriendList(request);
   }
 
   @Get('import')
@@ -43,5 +43,12 @@ export class UserController {
   @ApiOperation({ summary: 'import mock data' })
   importData() {
     return this.importService.importData();
+  }
+
+  @Get('mockFriends')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'add mock friends data' })
+  addFriendsInBenUser(@Req() request: Request) {
+    return this.importService.addFriendsInBenUser(request);
   }
 }

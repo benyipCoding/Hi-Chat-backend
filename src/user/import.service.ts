@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { join } from 'path';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class ImportService {
@@ -23,7 +24,7 @@ export class ImportService {
     arr.pop();
     arr.shift();
     try {
-      return this.userRepository.manager.transaction(async (manager) => {
+      return this.userRepository.manager.transaction(async () => {
         for (const item of arr) {
           const data = item.split(',');
           const payload: CreateUserDto = {
@@ -41,5 +42,27 @@ export class ImportService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async addFriendsInBenUser(request: Request) {
+    const rawData = fs.readFileSync(join(__dirname, './用户ID.csv'), 'utf-8');
+    const currentUser = request.user as User;
+    if (currentUser.name !== 'ben')
+      throw new HttpException('user is not ben', HttpStatus.FORBIDDEN);
+    const res = rawData.split('\r\n').filter((item) => item !== currentUser.id);
+    res.pop(); // ids array
+    const result = await this.userRepository.manager.transaction(
+      async (manager) => {
+        try {
+          if (currentUser.friend_ids?.length) {
+            return manager.save(User, { id: currentUser.id, friend_ids: null });
+          }
+          return manager.save(User, { id: currentUser.id, friend_ids: res });
+        } catch (error) {
+          throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      },
+    );
+    return result;
   }
 }

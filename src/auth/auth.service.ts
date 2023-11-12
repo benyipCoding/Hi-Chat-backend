@@ -30,7 +30,8 @@ export class AuthService {
 
     if (
       !existingUser ||
-      !(await comparePassword(password, existingUser.password))
+      !(await comparePassword(password, existingUser.password)) ||
+      !existingUser.id
     )
       throw new UnauthorizedException('Please check your credentials');
 
