@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { WebsocketModule } from './websocket/websocket.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -37,6 +38,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     UserModule,
     ConversationModule,
     TransactionModule,
+    WebsocketModule,
   ],
   controllers: [],
   providers: [],
