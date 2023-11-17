@@ -7,25 +7,34 @@ import {
   // MessageBody,
 } from '@nestjs/websockets';
 import { WebsocketService } from './websocket.service';
-// import { Server } from 'socket.io';
+// import { UseGuards } from '@nestjs/common';
+// import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { Server, Socket } from 'socket.io';
+import { SocketEvent } from 'src/utils/enum';
 // import { CreateWebsocketDto } from './dto/create-websocket.dt'
 // import { UpdateWebsocketDto } from './dto/update-websocket.dt
 
 @WebSocketGateway({ cors: true })
+// @UseGuards(JwtAuthGuard)
 export class WebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly websocketService: WebsocketService) {}
 
   @WebSocketServer()
-  server;
-  handleDisconnect() {
-    // throw new Error('Method not implemented.');
-  }
-  handleConnection() {
-    console.log(this.server.meta);
+  server: Server;
 
-    // throw new Error('Method not implemented.');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleDisconnect(client: Socket) {
+    console.log('ws disconnected');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleConnection(client: Socket, ...args: any[]) {
+    console.log('success');
+    // console.log(client.id);
+    this.server
+      .to(client.id)
+      .emit(SocketEvent.MESSAGE, `Welcome to Hi-Chat ${client.id}`);
   }
 
   // @WebSocketServer()

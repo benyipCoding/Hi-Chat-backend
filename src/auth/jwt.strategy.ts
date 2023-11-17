@@ -1,15 +1,21 @@
+import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Strategy, StrategyOptions, ExtractJwt } from 'passport-jwt';
 import { User } from 'src/db/entities/user.entity';
 import { Repository } from 'typeorm';
-import { JwtPayload } from './interfaces';
+import { JwtPayload, Tokens } from './interfaces';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {
     const options: StrategyOptions = {
       secretOrKey: process.env.JWT_SECRET,
@@ -19,14 +25,28 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super(options);
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
-    const now = Date.now() / 1000;
-    if (now > payload.exp)
-      throw new UnauthorizedException('Bearer token has been expired!');
+  async validate(payload: JwtPayload): Promise<User & Tokens> {
+    const res = await this.refreshTokenIdsStorage.validate(
+      payload.sub,
+      payload.tokenId,
+    );
+    if (!res)
+      throw new UnauthorizedException(
+        'Invalid token! Please check your credentials',
+      );
 
+    const now = Date.now() / 1000;
+    let tokens = undefined;
+    if (now > payload.exp) {
+      tokens = await this.authService.generateTokens({
+        sub: payload.sub,
+        name: payload.name,
+      });
+    }
     const user = await this.userRepository.findOne({
       where: { id: payload.sub },
     });
-    return user;
+
+    return { ...user, ...tokens };
   }
 }

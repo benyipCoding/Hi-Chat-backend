@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/db/entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { RedisService } from 'src/redis/redis.service';
+import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { JwtStrategy } from './jwt.strategy';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RedisService, RefreshTokenIdsStorage],
+  exports: [JwtStrategy],
 })
 export class AuthModule {}

@@ -14,7 +14,6 @@ export class TransactionController {
   @ApiOperation({ summary: '转账' })
   async create(@Body() payload: CreateTransactionDto) {
     const res = await this.transactionService.transMoney(payload);
-    console.log('@@@', res);
     return res;
   }
 }

@@ -4,9 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/db/entities/user.entity';
 import { Repository } from 'typeorm';
 import { comparePassword } from 'src/utils/helpers';
-import { JwtPayload } from './interfaces';
+import { JwtPayload, RefreshTokenPayload, Tokens } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
+import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +16,7 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
 
   async signIn(signInDto: SignInDto) {
@@ -40,15 +43,27 @@ export class AuthService {
       name: userName,
     };
 
-    const expireTime = this.configService.get<number>('ACCESS_TOKEN_TTL');
-    const accessToken = await this.jwtService.sign(payload);
-    const refreshToken = await this.jwtService.sign(payload, {
-      expiresIn: expireTime * 24,
-    });
+    const tokens = await this.generateTokens(payload);
+    return tokens;
+  }
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+  async generateTokens(payload: JwtPayload): Promise<Tokens> {
+    const tokenId = randomUUID();
+    const expireTime = +this.configService.get<number>('REFRESH_TOKEN_TTL');
+
+    const accessToken = this.jwtService.sign({
+      ...payload,
+      tokenId,
+    } as JwtPayload);
+    const refreshToken = this.jwtService.sign(
+      { sub: payload.sub, tokenId } as RefreshTokenPayload,
+      {
+        expiresIn: expireTime,
+      },
+    );
+
+    this.refreshTokenIdsStorage.insert(payload.sub, tokenId);
+
+    return { accessToken, refreshToken };
   }
 }
