@@ -7,11 +7,12 @@ export class WebsocketAdapter extends IoAdapter {
     const server: Server = super.createIOServer(port, options);
     server.use((socket, next) => {
       const token = socket.handshake.auth.token;
+      if (!token) next(new Error('jwt tokens must be provide'));
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
         // console.log('ws adapter', decoded);
       } catch (error) {
-        return next(new Error('Failure to parse jwt token!'));
+        return next(new Error(error));
       }
       // console.log(token);
       next();

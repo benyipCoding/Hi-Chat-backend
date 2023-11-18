@@ -27,4 +27,8 @@ export class RefreshTokenIdsStorage {
   getTokenId(userId: string): Promise<string> {
     return this.redisService.redisClient.get(this.getKey(userId));
   }
+
+  removeTokenId(userId: string): Promise<number> {
+    return this.redisService.redisClient.del(this.getKey(userId));
+  }
 }

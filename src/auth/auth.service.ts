@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -65,5 +66,9 @@ export class AuthService {
     this.refreshTokenIdsStorage.insert(payload.sub, tokenId);
 
     return { accessToken, refreshToken };
+  }
+
+  logout(request: Request) {
+    return this.refreshTokenIdsStorage.removeTokenId((request.user as User).id);
   }
 }
