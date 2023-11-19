@@ -37,7 +37,9 @@ export class AuthService {
       !(await comparePassword(password, existingUser.password)) ||
       !existingUser.id
     )
-      throw new UnauthorizedException('Please check your credentials');
+      throw new UnauthorizedException(
+        'User is not existed or credential valid failure',
+      );
 
     const payload: JwtPayload = {
       sub: existingUser.id,

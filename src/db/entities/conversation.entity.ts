@@ -19,7 +19,7 @@ export class Conversation {
   createAt: Date;
 
   @Column({ name: 'last_message_at', type: 'datetime' })
-  lassMessageAt: Date;
+  lastMessageAt: Date;
 
   @Column()
   name: string;
@@ -33,4 +33,7 @@ export class Conversation {
 
   @OneToMany(() => Message, (message) => message.conversation)
   messages: Message[];
+
+  @Column()
+  cover: string;
 }

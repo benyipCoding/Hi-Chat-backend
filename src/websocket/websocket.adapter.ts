@@ -10,11 +10,10 @@ export class WebsocketAdapter extends IoAdapter {
       if (!token) next(new Error('jwt tokens must be provide'));
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
-        // console.log('ws adapter', decoded);
+        console.log('ws adapter', decoded);
       } catch (error) {
         return next(new Error(error));
       }
-      // console.log(token);
       next();
     });
     return server;
