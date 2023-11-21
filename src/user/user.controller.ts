@@ -49,4 +49,11 @@ export class UserController {
   addFriendsInBenUser(@Req() request: Request) {
     return this.importService.addFriendsInBenUser(request);
   }
+
+  @Get('all-stranger')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'fetch all stranger' })
+  getStrangerList(@Req() request: Request) {
+    return this.userService.getStrangerList(request);
+  }
 }

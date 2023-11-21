@@ -5,3 +5,8 @@ export enum FriendshipStatus {
   PENDING = 'pending',
   REJECT = 'reject',
 }
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+}

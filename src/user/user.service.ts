@@ -43,4 +43,23 @@ export class UserService {
       .getMany();
     return result;
   }
+
+  async getStrangerList(request: Request) {
+    console.log((request.user as User).id);
+    const userId = (request.user as User).id;
+
+    const subQuery = (await this.userRepository
+      .createQueryBuilder('u_sub')
+      .select('u_sub.friend_ids')
+      .where(`u_sub.id = :id`, { id: userId })
+      .getOne()) || { friend_ids: ['1'] };
+
+    return this.userRepository
+      .createQueryBuilder('u')
+      .where(`u.id NOT IN (:...ids) AND u.id != :current`, {
+        ids: subQuery?.friend_ids,
+        current: (request.user as User).id,
+      })
+      .getMany();
+  }
 }

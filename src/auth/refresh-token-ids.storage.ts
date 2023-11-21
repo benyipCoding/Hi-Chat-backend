@@ -7,7 +7,7 @@ export class RefreshTokenIdsStorage {
   constructor(private readonly redisService: RedisService) {}
 
   private getKey(userId: string): string {
-    return `user-${userId}`;
+    return `tokens:user-${userId}`;
   }
 
   async insert(userId: string, tokenId: string): Promise<void> {

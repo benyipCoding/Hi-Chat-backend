@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Conversation } from './conversation.entity';
 import { Message } from './message.entity';
+import { Gender } from '../types';
 
 @Entity({ name: 'users' })
 export class User {
@@ -49,6 +50,9 @@ export class User {
   @Column({ nullable: true })
   refresh_token: string;
 
-  @Column('simple-array', { nullable: true })
+  @Column({ type: 'longtext', nullable: true })
   friend_ids: string[];
+
+  @Column({ type: 'enum', enum: ['male', 'female'] })
+  gender: Gender;
 }
