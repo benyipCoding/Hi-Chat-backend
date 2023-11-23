@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Friends } from 'src/db/entities/friends.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/db/entities/user.entity';
+
 // import { User } from 'src/db/entities/user.entity';
 
 @Injectable()
@@ -17,14 +18,7 @@ export class FriendsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-  friendInvitation(request: Request, createFriendDto: CreateFriendDto) {
-    createFriendDto.userIds.forEach(async (id) => {
-      const receiver = await this.userRepository.findOne({ where: { id } });
-      const record = await this.friendsRepository.create({
-        sender: request.user,
-        receiver,
-      });
-      this.friendsRepository.save(record);
-    });
+  async friendInvitation(request: Request, createFriendDto: CreateFriendDto) {
+    return `friendInvitation`;
   }
 }

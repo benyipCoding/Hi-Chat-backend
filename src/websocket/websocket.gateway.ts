@@ -32,6 +32,7 @@ export class WebsocketGateway
   async handleDisconnect(socket: AuthSocket) {
     await this.socketManager.remove(socket.user.sub);
   }
+
   async handleConnection(socket: AuthSocket) {
     await this.socketManager.insert(socket.user.sub, socket.id);
     this.server
