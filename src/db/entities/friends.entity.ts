@@ -32,6 +32,7 @@ export class Friends {
       FriendshipStatus.ACCEPT,
       FriendshipStatus.PENDING,
       FriendshipStatus.REJECT,
+      FriendshipStatus.SENDED,
     ],
     default: FriendshipStatus.PENDING,
   })

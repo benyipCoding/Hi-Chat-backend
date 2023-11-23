@@ -1,3 +1,4 @@
+import { SocketManagerStorage } from './socket-manager.storage';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -9,8 +10,9 @@ import {
 import { WebsocketService } from './websocket.service';
 // import { UseGuards } from '@nestjs/common';
 // import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { SocketEvent } from 'src/utils/enum';
+import { AuthSocket } from './interface';
 // import { CreateWebsocketDto } from './dto/create-websocket.dt'
 // import { UpdateWebsocketDto } from './dto/update-websocket.dt
 
@@ -19,57 +21,21 @@ import { SocketEvent } from 'src/utils/enum';
 export class WebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly websocketService: WebsocketService) {}
+  constructor(
+    private readonly websocketService: WebsocketService,
+    private readonly socketManager: SocketManagerStorage,
+  ) {}
 
   @WebSocketServer()
   server: Server;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleDisconnect(client: Socket) {
-    console.log('ws disconnected');
+  async handleDisconnect(socket: AuthSocket) {
+    await this.socketManager.remove(socket.user.sub);
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleConnection(client: Socket, ...args: any[]) {
-    console.log('success');
-    // console.log(client.id);
+  async handleConnection(socket: AuthSocket) {
+    await this.socketManager.insert(socket.user.sub, socket.id);
     this.server
-      .to(client.id)
-      .emit(SocketEvent.MESSAGE, `Welcome to Hi-Chat ${client.id}`);
+      .to(socket.id)
+      .emit(SocketEvent.MESSAGE, `Welcome to Hi-Chat ${socket.id}`);
   }
-
-  // @WebSocketServer()
-  // server: Server;
-  // handleDisconnect(client: any) {
-  //   console.log('disconnected');
-  //   //@ts-ignore
-  //   console.log(this.server.meta!);
-  // }
-  // handleConnection(client: any, ...args: any[]) {
-  //   console.log('connected');
-  // }
-
-  // @SubscribeMessage('createWebsocket')
-  // create(@MessageBody() createWebsocketDto: CreateWebsocketDto) {
-  //   return this.websocketService.create(createWebsocketDto);
-  // }
-
-  // @SubscribeMessage('findAllWebsocket')
-  // findAll() {
-  //   return this.websocketService.findAll();
-  // }
-
-  // @SubscribeMessage('findOneWebsocket')
-  // findOne(@MessageBody() id: number) {
-  //   return this.websocketService.findOne(id);
-  // }
-
-  // @SubscribeMessage('updateWebsocket')
-  // update(@MessageBody() updateWebsocketDto: UpdateWebsocketDto) {
-  //   return this.websocketService.update(updateWebsocketDto.id, updateWebsocketDto);
-  // }
-
-  // @SubscribeMessage('removeWebsocket')
-  // remove(@MessageBody() id: number) {
-  //   return this.websocketService.remove(id);
-  // }
 }

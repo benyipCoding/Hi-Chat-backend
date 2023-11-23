@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { FriendsModule } from './friends/friends.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -39,6 +40,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     ConversationModule,
     TransactionModule,
     WebsocketModule,
+    FriendsModule,
   ],
   controllers: [],
   providers: [],

@@ -3,6 +3,7 @@
 export enum FriendshipStatus {
   ACCEPT = 'accept',
   PENDING = 'pending',
+  SENDED = 'sended',
   REJECT = 'reject',
 }
 
