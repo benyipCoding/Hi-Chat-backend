@@ -3,8 +3,9 @@
 export enum FriendshipStatus {
   ACCEPT = 'accept',
   PENDING = 'pending',
-  SENDED = 'sended',
+  SENT = 'sent',
   REJECT = 'reject',
+  SEEN = 'seen',
 }
 
 export enum Gender {

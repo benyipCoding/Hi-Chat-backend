@@ -32,9 +32,13 @@ export class Friends {
       FriendshipStatus.ACCEPT,
       FriendshipStatus.PENDING,
       FriendshipStatus.REJECT,
-      FriendshipStatus.SENDED,
+      FriendshipStatus.SENT,
+      FriendshipStatus.SEEN,
     ],
     default: FriendshipStatus.PENDING,
   })
   status: FriendshipStatus;
+
+  @Column()
+  greetings: string;
 }

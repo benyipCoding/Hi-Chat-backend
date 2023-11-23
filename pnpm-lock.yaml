@@ -14,6 +14,9 @@ dependencies:
   '@nestjs/core':
     specifier: ^10.0.0
     version: registry.npmmirror.com/@nestjs/core@10.0.0(@nestjs/common@10.0.0)(@nestjs/platform-express@10.0.0)(@nestjs/websockets@10.2.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+  '@nestjs/event-emitter':
+    specifier: ^2.0.3
+    version: registry.npmmirror.com/@nestjs/event-emitter@2.0.3(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(reflect-metadata@0.1.13)
   '@nestjs/jwt':
     specifier: ^10.1.1
     version: registry.npmmirror.com/@nestjs/jwt@10.1.1(@nestjs/common@10.0.0)
@@ -1224,6 +1227,22 @@ packages:
       uid: registry.npmmirror.com/uid@2.0.2
     transitivePeerDependencies:
       - encoding
+
+  registry.npmmirror.com/@nestjs/event-emitter@2.0.3(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(reflect-metadata@0.1.13):
+    resolution: {integrity: sha512-Pt7KAERrgK0OjvarSI3wfVhwZ8X1iLq1lXuodyRe+Zx3aLLP7fraFUHirASbFkB6KIQ1Zj+gZ1g8a9eu4GfFhw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@nestjs/event-emitter/-/event-emitter-2.0.3.tgz}
+    id: registry.npmmirror.com/@nestjs/event-emitter/2.0.3
+    name: '@nestjs/event-emitter'
+    version: 2.0.3
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      '@nestjs/core': ^8.0.0 || ^9.0.0 || ^10.0.0
+      reflect-metadata: ^0.1.12
+    dependencies:
+      '@nestjs/common': registry.npmmirror.com/@nestjs/common@10.0.0(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/core': registry.npmmirror.com/@nestjs/core@10.0.0(@nestjs/common@10.0.0)(@nestjs/platform-express@10.0.0)(@nestjs/websockets@10.2.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      eventemitter2: registry.npmmirror.com/eventemitter2@6.4.9
+      reflect-metadata: registry.npmmirror.com/reflect-metadata@0.1.13
+    dev: false
 
   registry.npmmirror.com/@nestjs/jwt@10.1.1(@nestjs/common@10.0.0):
     resolution: {integrity: sha512-sISYylg8y1Mb7saxPx5Zh11i7v9JOh70CEC/rN6g43MrbFlJ57c1eYFrffxip1YAx3DmV4K67yXob3syKZMOew==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@nestjs/jwt/-/jwt-10.1.1.tgz}
@@ -3700,6 +3719,12 @@ packages:
     name: etag
     version: 1.8.1
     engines: {node: '>= 0.6'}
+
+  registry.npmmirror.com/eventemitter2@6.4.9:
+    resolution: {integrity: sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/eventemitter2/-/eventemitter2-6.4.9.tgz}
+    name: eventemitter2
+    version: 6.4.9
+    dev: false
 
   registry.npmmirror.com/events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/events/-/events-3.3.0.tgz}

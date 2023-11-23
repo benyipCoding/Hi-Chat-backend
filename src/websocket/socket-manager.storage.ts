@@ -6,7 +6,7 @@ export class SocketManagerStorage {
   constructor(private readonly redisService: RedisService) {}
 
   private getKey(userId: string) {
-    return `sokcet-clients:socket-${userId}`;
+    return `sokcets:socket-${userId}`;
   }
 
   insert(userId: string, socketId: string): Promise<'OK'> {
@@ -20,5 +20,9 @@ export class SocketManagerStorage {
 
   remove(userId: string): Promise<number> {
     return this.redisService.redisClient.del(this.getKey(userId));
+  }
+
+  getSocketId(userId: string): Promise<string> {
+    return this.redisService.redisClient.get(this.getKey(userId));
   }
 }

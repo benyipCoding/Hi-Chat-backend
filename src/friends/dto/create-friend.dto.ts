@@ -10,5 +10,5 @@ export class CreateFriendDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty()
-  helloText: string;
+  greetings: string;
 }

@@ -8,6 +8,8 @@ import { ConversationModule } from './conversation/conversation.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { FriendsModule } from './friends/friends.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventsModule } from './event/events.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -41,6 +43,8 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     TransactionModule,
     WebsocketModule,
     FriendsModule,
+    EventEmitterModule.forRoot(),
+    EventsModule,
   ],
   controllers: [],
   providers: [],

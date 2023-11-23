@@ -11,5 +11,6 @@ import { SocketManagerStorage } from './socket-manager.storage';
     RedisService,
     SocketManagerStorage,
   ],
+  exports: [WebsocketGateway, SocketManagerStorage, RedisService],
 })
 export class WebsocketModule {}
