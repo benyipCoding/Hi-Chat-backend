@@ -45,7 +45,6 @@ export class UserService {
   }
 
   async getStrangerList(request: Request) {
-    console.log((request.user as User).id);
     const userId = (request.user as User).id;
 
     const subQuery = (await this.userRepository

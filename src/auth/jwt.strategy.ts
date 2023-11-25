@@ -24,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User & Tokens> {
+    // console.log(2);
     const res = await this.refreshTokenIdsStorage.validate(
       payload.sub,
       payload.tokenId,
