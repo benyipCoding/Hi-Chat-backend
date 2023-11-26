@@ -34,14 +34,14 @@ export class UserService {
   }
 
   async getFriendList(request: Request) {
-    const currentUser = request.user as User;
-    if (!currentUser.friend_ids) return null;
-    const result = await this.userRepository
-      .createQueryBuilder('u')
-      .select(['u.name', 'u.email', 'u.avatar'])
-      .where('u.id IN (:...ids)', { ids: currentUser.friend_ids })
-      .getMany();
-    return result;
+    // const currentUser = request.user as User;
+    // if (!currentUser.friend_ids) return null;
+    // const result = await this.userRepository
+    //   .createQueryBuilder('u')
+    //   .select(['u.name', 'u.email', 'u.avatar'])
+    //   .where('u.id IN (:...ids)', { ids: currentUser.friend_ids })
+    //   .getMany();
+    // return result;
   }
 
   async getStrangerList(request: Request) {
