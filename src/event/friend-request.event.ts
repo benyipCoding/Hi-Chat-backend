@@ -23,12 +23,22 @@ export class FriendRequestEvent {
   @OnEvent(FriendRequest.CREATE)
   async onFriendRequestCreate(payload: Friends[]) {
     for (const friend of payload) {
-      //check if receiver is online?
-      const socketId = await this.socketManager.getSocketId(friend.receiver.id);
-      if (!socketId) continue;
+      // handler for sender
+      const senderSocketId = await this.socketManager.getSocketId(
+        friend.sender.id,
+      );
+      this.wsGateway.server
+        .to(senderSocketId)
+        .emit(SocketEvent.ADD_FRIEND_REQUEST_RECORD, friend);
+
+      //handler for receiver
+      const receiverSocketId = await this.socketManager.getSocketId(
+        friend.receiver.id,
+      );
+      if (!receiverSocketId) continue;
 
       const isSent = this.wsGateway.server
-        .to(socketId)
+        .to(receiverSocketId)
         .emit(SocketEvent.FRIEND_REQUEST, {
           ...friend,
           receiver: undefined,

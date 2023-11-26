@@ -20,10 +20,23 @@ export class FriendsService {
 
   async friendInvitation(request: Request, createFriendDto: CreateFriendDto) {
     const promiseList: Promise<Friends>[] = [];
-
     for (const id of createFriendDto.userIds) {
       const receiver = await this.userRepository.findOne({ where: { id } });
       if (!receiver) continue;
+      const existedRecord = await this.friendsRepository
+        .createQueryBuilder('f')
+        .where('f.senderId = :sender AND f.receiverId = :receiver', {
+          sender: (request.user as User).id,
+          receiver: id,
+        })
+        .getOne();
+
+      if (existedRecord) {
+        existedRecord.greetings += `&nbsp;${createFriendDto.greetings}`;
+        this.friendsRepository.save(existedRecord);
+        continue;
+      }
+
       const friendRequestData = await this.friendsRepository.create({
         sender: request.user,
         receiver,

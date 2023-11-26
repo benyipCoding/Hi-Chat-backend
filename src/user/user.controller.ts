@@ -43,12 +43,12 @@ export class UserController {
     return this.importService.importData();
   }
 
-  @Get('mockFriends')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'add mock friends data' })
-  addFriendsInBenUser(@Req() request: Request) {
-    return this.importService.addFriendsInBenUser(request);
-  }
+  // @Get('mockFriends')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'add mock friends data' })
+  // addFriendsInBenUser(@Req() request: Request) {
+  //   return this.importService.addFriendsInBenUser(request);
+  // }
 
   @Get('all-stranger')
   @HttpCode(HttpStatus.OK)

@@ -5,6 +5,7 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { FriendshipStatus } from '../types';
@@ -25,6 +26,9 @@ export class Friends {
 
   @CreateDateColumn({ type: 'datetime', name: 'create_at' })
   createAt: Date;
+
+  @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
+  updateAt: Date;
 
   @Column({
     type: 'enum',
