@@ -6,6 +6,7 @@ import {
   UseGuards,
   Req,
   Body,
+  Get,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -28,5 +29,12 @@ export class FriendsController {
     @Body() createFriendDto: CreateFriendDto,
   ) {
     return this.friendsService.friendInvitation(request, createFriendDto);
+  }
+
+  @Get('users-invitations')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get all invitations by userId' })
+  invitatonsOfUser(@Req() request: Request) {
+    return this.friendsService.invitatonsOfUser(request);
   }
 }

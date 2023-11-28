@@ -24,12 +24,12 @@ export class FriendRequestEvent {
   async onFriendRequestCreate(payload: Friends[]) {
     for (const friend of payload) {
       // handler for sender
-      const senderSocketId = await this.socketManager.getSocketId(
-        friend.sender.id,
-      );
-      this.wsGateway.server
-        .to(senderSocketId)
-        .emit(SocketEvent.ADD_FRIEND_REQUEST_RECORD, friend);
+      // const senderSocketId = await this.socketManager.getSocketId(
+      //   friend.sender.id,
+      // );
+      // this.wsGateway.server
+      //   .to(senderSocketId)
+      //   .emit(SocketEvent.ADD_FRIEND_REQUEST_RECORD, friend);
 
       //handler for receiver
       const receiverSocketId = await this.socketManager.getSocketId(

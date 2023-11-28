@@ -29,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       payload.sub,
       payload.tokenId,
     );
+
     if (!res)
       throw new UnauthorizedException(
         'Invalid token! Please check your credentials',

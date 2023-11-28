@@ -49,4 +49,35 @@ export class FriendsService {
     this.event.emit(FriendRequest.CREATE, result);
     return result.length;
   }
+
+  async invitatonsOfUser(request: Request) {
+    const res = await this.friendsRepository
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.sender', 'sender')
+      .leftJoinAndSelect('f.receiver', 'receiver')
+      .where('f.senderId = :userId or f.receiverId = :userId', {
+        userId: (request.user as User).id,
+      })
+      .orderBy('f.update_at', 'DESC')
+      .getMany();
+    if (!res?.length) return [];
+
+    return res.map((item: Friends) => ({
+      ...item,
+      sender: {
+        id: item.sender.id,
+        name: item.sender.name,
+        avatar: item.sender.avatar,
+        gender: item.sender.gender,
+        email: item.sender.email,
+      },
+      receiver: {
+        id: item.receiver.id,
+        name: item.receiver.name,
+        avatar: item.receiver.avatar,
+        gender: item.receiver.gender,
+        email: item.receiver.email,
+      },
+    }));
+  }
 }
