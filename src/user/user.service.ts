@@ -33,6 +33,7 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getFriendList(request: Request) {
     // const currentUser = request.user as User;
     // if (!currentUser.friend_ids) return null;
@@ -51,7 +52,9 @@ export class UserService {
     return this.userRepository
       .createQueryBuilder('u')
       .where(`u.id NOT IN (:...ids) AND u.id != :current`, {
-        ids: user?.friend_ids ? user.friend_ids.split(',') : ['1'],
+        ids: user?.friend_ids
+          ? user.friend_ids.split(process.env.SEPARATOR)
+          : ['1'], // this ['1'] is just for the situation of null. it could be any Array
         current: (request.user as User).id,
       })
       .getMany();

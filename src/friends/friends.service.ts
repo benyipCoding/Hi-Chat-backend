@@ -124,7 +124,7 @@ export class FriendsService {
         else sender.friend_ids += `,${receiver.id}`;
 
         if (!receiver.friend_ids) receiver.friend_ids = sender.id;
-        else receiver.friend_ids += `,${sender.id}`;
+        else receiver.friend_ids += `${process.env.SEPARATOR}${sender.id}`;
 
         await Promise.all([
           entityManager.save(User, {
