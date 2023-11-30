@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { User } from 'src/db/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FriendRequest } from 'src/event/enum';
+import { ChangeFriendshipDto } from './dto/change-friendship.dto';
+import { FriendshipStatus } from 'src/db/types';
 
 @Injectable()
 export class FriendsService {
@@ -25,10 +27,14 @@ export class FriendsService {
       if (!receiver) continue;
       const existedRecord = await this.friendsRepository
         .createQueryBuilder('f')
-        .where('f.senderId = :sender AND f.receiverId = :receiver', {
-          sender: (request.user as User).id,
-          receiver: id,
-        })
+        .where(
+          'f.senderId = :sender AND f.receiverId = :receiver AND f.status != :reject',
+          {
+            sender: (request.user as User).id,
+            receiver: id,
+            reject: FriendshipStatus.REJECT,
+          },
+        )
         .getOne();
 
       if (existedRecord) {
@@ -79,5 +85,18 @@ export class FriendsService {
         email: item.receiver.email,
       },
     }));
+  }
+
+  async changeFriendship(changeFriendshipDto: ChangeFriendshipDto) {
+    const target = await this.friendsRepository
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.sender', 'sender')
+      .where('f.id = :id', { id: changeFriendshipDto.id })
+      .getOne();
+
+    target.status = changeFriendshipDto.status;
+    this.friendsRepository.save(target);
+    console.log(target);
+    // 下班继续！
   }
 }

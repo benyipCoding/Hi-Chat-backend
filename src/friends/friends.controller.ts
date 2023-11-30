@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateFriendDto } from './dto/create-friend.dto';
+import { ChangeFriendshipDto } from './dto/change-friendship.dto';
 
 @Controller('friends')
 @UseGuards(JwtAuthGuard)
@@ -23,7 +24,7 @@ export class FriendsController {
 
   @Post('invitation')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'friend invitation' })
+  @ApiOperation({ summary: 'send friend invitations' })
   friendInvitation(
     @Req() request: Request,
     @Body() createFriendDto: CreateFriendDto,
@@ -36,5 +37,12 @@ export class FriendsController {
   @ApiOperation({ summary: 'get all invitations by userId' })
   invitatonsOfUser(@Req() request: Request) {
     return this.friendsService.invitatonsOfUser(request);
+  }
+
+  @Post('changeFriendship')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'change friendship status' })
+  changeFriendship(@Body() changeFriendshipDto: ChangeFriendshipDto) {
+    return this.friendsService.changeFriendship(changeFriendshipDto);
   }
 }
