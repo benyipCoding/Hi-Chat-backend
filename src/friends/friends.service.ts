@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FriendRequest } from 'src/event/enum';
 import { ChangeFriendshipDto } from './dto/change-friendship.dto';
 import { FriendshipStatus } from 'src/db/types';
+import { SocketManagerStorage } from 'src/websocket/socket-manager.storage';
 
 @Injectable()
 export class FriendsService {
@@ -18,6 +19,7 @@ export class FriendsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly event: EventEmitter2,
+    private readonly socketManager: SocketManagerStorage,
   ) {}
 
   async friendInvitation(request: Request, createFriendDto: CreateFriendDto) {
@@ -88,15 +90,66 @@ export class FriendsService {
   }
 
   async changeFriendship(changeFriendshipDto: ChangeFriendshipDto) {
-    const target = await this.friendsRepository
+    const targetInvitation = await this.friendsRepository
       .createQueryBuilder('f')
       .leftJoinAndSelect('f.sender', 'sender')
+      .leftJoinAndSelect('f.receiver', 'receiver')
       .where('f.id = :id', { id: changeFriendshipDto.id })
       .getOne();
 
-    target.status = changeFriendshipDto.status;
-    this.friendsRepository.save(target);
-    console.log(target);
-    // 下班继续！
+    targetInvitation.status = changeFriendshipDto.status;
+    this.friendsRepository.save(targetInvitation);
+    // notise sender to fetch invitation api
+    const senderSocketId = await this.socketManager.getSocketId(
+      targetInvitation.sender.id,
+    );
+    if (senderSocketId)
+      this.event.emit(FriendRequest.REFRESH_INVITATIONS, senderSocketId);
+    // if invitation status is accept, start tansaction to update sender and receiver data
+    if (changeFriendshipDto.status === FriendshipStatus.REJECT) return;
+    // start transaction
+    const res = await this.userRepository.manager.transaction(
+      async (entityManager) => {
+        const [sender, receiver] = await this.userRepository.find({
+          where: [
+            { id: targetInvitation.sender.id },
+            { id: targetInvitation.receiver.id },
+          ],
+        });
+
+        if (!sender || !receiver)
+          throw new BadRequestException('User data in table users is missing');
+
+        if (!sender.friend_ids) sender.friend_ids = receiver.id;
+        else sender.friend_ids += `,${receiver.id}`;
+
+        if (!receiver.friend_ids) receiver.friend_ids = sender.id;
+        else receiver.friend_ids += `,${sender.id}`;
+
+        await Promise.all([
+          entityManager.save(User, {
+            id: sender.id,
+            friend_ids: sender.friend_ids,
+          }),
+          entityManager
+            .save(User, {
+              id: receiver.id,
+              friend_ids: receiver.friend_ids,
+            })
+            .catch(async () => {
+              targetInvitation.status = FriendshipStatus.SENT;
+              await this.friendsRepository.save(targetInvitation);
+              throw new HttpException(
+                'something wrong with saving sender & receiver data',
+                500,
+              );
+            }),
+        ]);
+
+        return;
+      },
+    );
+
+    console.log(res);
   }
 }

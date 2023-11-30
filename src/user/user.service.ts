@@ -46,17 +46,12 @@ export class UserService {
 
   async getStrangerList(request: Request) {
     const userId = (request.user as User).id;
-
-    const subQuery = (await this.userRepository
-      .createQueryBuilder('u_sub')
-      .select('u_sub.friend_ids')
-      .where(`u_sub.id = :id`, { id: userId })
-      .getOne()) || { friend_ids: ['1'] };
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
     return this.userRepository
       .createQueryBuilder('u')
       .where(`u.id NOT IN (:...ids) AND u.id != :current`, {
-        ids: subQuery?.friend_ids,
+        ids: user?.friend_ids ? user.friend_ids.split(',') : ['1'],
         current: (request.user as User).id,
       })
       .getMany();

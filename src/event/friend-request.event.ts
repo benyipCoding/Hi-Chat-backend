@@ -23,14 +23,6 @@ export class FriendRequestEvent {
   @OnEvent(FriendRequest.CREATE)
   async onFriendRequestCreate(payload: Friends[]) {
     for (const friend of payload) {
-      // handler for sender
-      // const senderSocketId = await this.socketManager.getSocketId(
-      //   friend.sender.id,
-      // );
-      // this.wsGateway.server
-      //   .to(senderSocketId)
-      //   .emit(SocketEvent.ADD_FRIEND_REQUEST_RECORD, friend);
-
       //handler for receiver
       const receiverSocketId = await this.socketManager.getSocketId(
         friend.receiver.id,
@@ -53,5 +45,13 @@ export class FriendRequestEvent {
       friend.status = FriendshipStatus.SENT;
       await this.friendsRepository.save(friend);
     }
+  }
+
+  @OnEvent(FriendRequest.REFRESH_INVITATIONS)
+  noticeClientToRefreshInvitationsApiBySocketId(payload: string) {
+    if (!payload) {
+      return this.logger.error('there is no socketId to transfer');
+    }
+    this.wsGateway.server.to(payload).emit(SocketEvent.FRIEND_REQUEST);
   }
 }

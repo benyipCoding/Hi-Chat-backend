@@ -51,7 +51,7 @@ export class User {
   // refresh_token: string;
 
   @Column({ type: 'longtext', nullable: true })
-  friend_ids: string[];
+  friend_ids: string;
 
   @Column({ type: 'enum', enum: ['male', 'female'] })
   gender: Gender;

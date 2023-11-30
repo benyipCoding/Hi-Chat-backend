@@ -10,17 +10,13 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { UserService } from './user.service';
 import { Request } from 'express';
-import { ImportService } from './import.service';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiTags('User Module')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly importService: ImportService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get('profile')
   @HttpCode(HttpStatus.OK)
@@ -36,12 +32,12 @@ export class UserController {
     return this.userService.getFriendList(request);
   }
 
-  @Get('import')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'import mock data' })
-  importData() {
-    return this.importService.importData();
-  }
+  // @Get('import')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'import mock data' })
+  // importData() {
+  //   return this.importService.importData();
+  // }
 
   // @Get('mockFriends')
   // @HttpCode(HttpStatus.OK)

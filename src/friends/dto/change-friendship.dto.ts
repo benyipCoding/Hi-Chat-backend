@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { FriendshipStatus } from 'src/db/types';
 
 export class ChangeFriendshipDto {
@@ -10,6 +10,7 @@ export class ChangeFriendshipDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEnum(FriendshipStatus)
   @ApiProperty({ example: FriendshipStatus.ACCEPT })
   status: FriendshipStatus.ACCEPT | FriendshipStatus.REJECT;
 }
