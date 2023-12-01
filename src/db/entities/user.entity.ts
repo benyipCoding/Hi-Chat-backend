@@ -47,9 +47,6 @@ export class User {
   @ManyToMany(() => Message, (message) => message.seenByUsers)
   seenMessages: Message[];
 
-  @Column({ type: 'longtext', nullable: true })
-  friend_ids: string;
-
   @Column({ type: 'enum', enum: ['male', 'female'] })
   gender: Gender;
 }

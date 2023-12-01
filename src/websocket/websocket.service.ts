@@ -50,6 +50,13 @@ export class WebsocketService {
         server.to(senderSocket).emit(SocketEvent.FRIEND_REQUEST);
     }
 
-    server.to(socket.id).emit(SocketEvent.UNTREATED_INVITATIONS, invitations);
+    server.to(socket.id).emit(
+      SocketEvent.UNTREATED_INVITATIONS,
+      invitations.map((i) => ({
+        ...i,
+        sender: i.sender.id,
+        receiver: i.receiver.id,
+      })),
+    );
   }
 }
