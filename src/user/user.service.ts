@@ -52,6 +52,7 @@ export class UserService {
   async getFriendList(request: Request) {
     const userId = (request.user as User).id;
     const friend_ids = await this.queryFriendIdsByUserId(userId);
+    if (!friend_ids?.length) return [];
     return this.userRepository
       .createQueryBuilder('u')
       .where('u.id IN (:...friends)', { friends: friend_ids })
