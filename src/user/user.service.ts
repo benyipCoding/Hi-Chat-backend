@@ -56,6 +56,7 @@ export class UserService {
     return this.userRepository
       .createQueryBuilder('u')
       .where('u.id IN (:...friends)', { friends: friend_ids })
+      .orderBy('u.name')
       .getMany();
   }
 
