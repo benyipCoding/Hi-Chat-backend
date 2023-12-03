@@ -1,7 +1,7 @@
 import { SocketManagerStorage } from 'src/websocket/socket-manager.storage';
 import { Injectable, Logger } from '@nestjs/common';
 import { WebsocketGateway } from 'src/websocket/websocket.gateway';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { FriendRequest } from './enum';
 import { Friends } from 'src/db/entities/friends.entity';
 import { SocketEvent } from 'src/utils/enum';
@@ -16,6 +16,7 @@ export class FriendRequestEvent {
     private readonly socketManager: SocketManagerStorage,
     @InjectRepository(Friends)
     private readonly friendsRepository: Repository<Friends>,
+    private readonly event: EventEmitter2,
   ) {}
 
   private logger = new Logger('friend-request');
@@ -36,12 +37,18 @@ export class FriendRequestEvent {
           receiver: undefined,
           status: undefined,
         });
+
       if (!isSent) {
         this.logger.error(
           `Something wrong with sending friend request to ${friend.receiver.name} in realtime`,
         );
         continue;
       }
+
+      this.wsGateway.server
+        .to(receiverSocketId)
+        .emit(SocketEvent.REFRESH_UNTREATEDCOUNT);
+
       friend.status = FriendshipStatus.SENT;
       await this.friendsRepository.save(friend);
     }

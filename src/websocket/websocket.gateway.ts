@@ -1,14 +1,16 @@
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  // SubscribeMessage,
+  ConnectedSocket,
   // MessageBody,
 } from '@nestjs/websockets';
 import { WebsocketService } from './websocket.service';
 import { Server } from 'socket.io';
 import { AuthSocket } from './interface';
+import { SocketEvent } from 'src/utils/enum';
 
 @WebSocketGateway({ cors: true })
 // @UseGuards(JwtAuthGuard)
@@ -27,5 +29,10 @@ export class WebsocketGateway
 
   handleDisconnect(socket: AuthSocket) {
     this.websocketService.removeSocketFromRedis(socket);
+  }
+
+  @SubscribeMessage(SocketEvent.REFRESH_UNTREATEDCOUNT)
+  refreshUntreatedCount(@ConnectedSocket() socket: AuthSocket) {
+    this.websocketService.QueryUntreatedInvitations(this.server, socket);
   }
 }
