@@ -9,7 +9,6 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Conversation } from './conversation.entity';
 import { Message } from './message.entity';
 import { Gender } from '../types';
 
@@ -40,9 +39,6 @@ export class User {
   @OneToMany(() => Message, (message) => message.sender)
   @JoinColumn()
   messages: Message[];
-
-  @ManyToMany(() => Conversation, (con) => con.users)
-  conversations: Conversation[];
 
   @ManyToMany(() => Message, (message) => message.seenByUsers)
   seenMessages: Message[];

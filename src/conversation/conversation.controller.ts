@@ -1,14 +1,17 @@
 import {
+  Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
-  Param,
+  Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateConversationDto } from './dto/create-conversation.dto';
+import { Request } from 'express';
 
 @Controller('conversation')
 @UseGuards(JwtAuthGuard)
@@ -17,10 +20,16 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
-  @Get(':id')
+  @Post('create')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get conversation by id' })
-  getConversationById(@Param('id') id: number) {
-    return this.conversationService.getConversationById(id);
+  @ApiOperation({ summary: 'create conversation' })
+  createConversation(
+    @Req() request: Request,
+    @Body() createConversationDto: CreateConversationDto,
+  ) {
+    return this.conversationService.createConversation(
+      request,
+      createConversationDto,
+    );
   }
 }

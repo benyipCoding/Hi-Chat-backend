@@ -70,4 +70,9 @@ export class UserService {
       .where('u.id NOT IN (:...friends)', { friends: friend_ids })
       .getMany();
   }
+
+  async isUserExisted(userId: string): Promise<boolean> {
+    const res = await this.userRepository.findOneBy({ id: userId });
+    return res !== null;
+  }
 }

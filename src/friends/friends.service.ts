@@ -116,4 +116,20 @@ export class FriendsService {
     });
     return this.friendshipRepository.save(friendshipData);
   }
+
+  async isFriend(currentUser: User, targetUser: User): Promise<boolean> {
+    const res = await this.friendshipRepository.find({
+      where: [
+        {
+          sender: currentUser,
+          receiver: targetUser,
+        },
+        {
+          sender: targetUser,
+          receiver: currentUser,
+        },
+      ],
+    });
+    return res !== null;
+  }
 }

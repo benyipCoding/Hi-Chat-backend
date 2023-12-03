@@ -2,10 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Message } from './message.entity';
@@ -18,22 +19,23 @@ export class Conversation {
   @CreateDateColumn({ name: 'create_at', type: 'datetime' })
   createAt: Date;
 
-  @Column({ name: 'last_message_at', type: 'datetime' })
+  @Column({ name: 'last_message_at', type: 'datetime', nullable: true })
   lastMessageAt: Date;
 
-  @Column()
-  name: string;
+  @OneToOne(() => User, { createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'creator_id' })
+  creator: User;
 
-  @Column()
-  isGroup: boolean;
+  @OneToOne(() => User, { createForeignKeyConstraints: false })
+  @JoinColumn({ name: 'recipient_id' })
+  recipient: User;
 
-  @ManyToMany(() => User, (user) => user.conversations)
-  @JoinTable({ name: 'conversation_user' })
-  users: User[];
-
-  @OneToMany(() => Message, (message) => message.conversation)
+  @OneToMany(() => Message, (message) => message.conversation, {
+    cascade: ['insert', 'remove', 'update'],
+  })
+  @JoinColumn()
   messages: Message[];
 
-  @Column()
-  cover: string;
+  @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
+  updateAt: Date;
 }

@@ -12,5 +12,6 @@ import { Friendship } from 'src/db/entities/friendship.entity';
   imports: [TypeOrmModule.forFeature([User, Friends, Friendship])],
   controllers: [FriendsController],
   providers: [FriendsService, SocketManagerStorage, RedisService],
+  exports: [FriendsService],
 })
 export class FriendsModule {}
