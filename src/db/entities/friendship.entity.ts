@@ -11,6 +11,7 @@ import { User } from './user.entity';
 
 @Entity()
 @Index('idx_sender_receiver', ['sender', 'receiver'])
+@Index('idx_receiver_sender', ['receiver', 'sender'])
 export class Friendship {
   @PrimaryGeneratedColumn()
   id: number;

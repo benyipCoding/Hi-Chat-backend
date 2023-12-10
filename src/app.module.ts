@@ -10,6 +10,7 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { FriendsModule } from './friends/friends.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './event/events.module';
+import { MessageModule } from './message/message.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -45,6 +46,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     FriendsModule,
     EventEmitterModule.forRoot(),
     EventsModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],

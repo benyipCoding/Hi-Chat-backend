@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   OneToMany,
   OneToOne,
@@ -12,6 +13,8 @@ import { User } from './user.entity';
 import { Message } from './message.entity';
 
 @Entity({ name: 'conversations' })
+@Index('idx_creator_recipient', ['creator', 'recipient'])
+@Index('idx_recipient_creator', ['recipient', 'creator'])
 export class Conversation {
   @PrimaryGeneratedColumn()
   id: number;
@@ -21,6 +24,13 @@ export class Conversation {
 
   @Column({ name: 'last_message_at', type: 'datetime', nullable: true })
   lastMessageAt: Date;
+
+  @OneToOne(() => Message, {
+    createForeignKeyConstraints: false,
+    nullable: true,
+  })
+  @JoinColumn({ name: 'last_message_id' })
+  lastMessage: Message;
 
   @OneToOne(() => User, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'creator_id' })
