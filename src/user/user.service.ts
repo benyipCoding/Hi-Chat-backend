@@ -75,4 +75,8 @@ export class UserService {
     const res = await this.userRepository.findOneBy({ id: userId });
     return res !== null;
   }
+
+  findUserById(userId: string): Promise<User> {
+    return this.userRepository.findOneBy({ id: userId });
+  }
 }

@@ -22,7 +22,9 @@ export class ConversationService {
     request: Request,
     createConversationDto: CreateConversationDto,
   ) {
-    const currentUser = request.user as User;
+    const currentUser = await this.userService.findUserById(
+      (request.user as User).id,
+    );
     const targetUser = createConversationDto.target;
 
     if (!(await this.userService.isUserExisted(targetUser.id)))

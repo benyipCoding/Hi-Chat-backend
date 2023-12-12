@@ -20,6 +20,7 @@ export class MessageEvent {
     const socketId = await this.socketManager.getSocketId(targetUser.id);
     if (!socketId) return;
     this.wsGateway.server.to(socketId).emit(SocketEvent.MESSAGE_DELIVER, {
+      id: message.id,
       content: message.content,
       sender: message.sender,
       conversation: message.conversation,

@@ -8,6 +8,7 @@ import { Message } from 'src/db/entities/message.entity';
 import { User } from 'src/db/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MessageDeliver } from 'src/event/enum';
+import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Injectable()
 export class MessageService {
@@ -67,5 +68,20 @@ export class MessageService {
       .getMany();
 
     return messages;
+  }
+
+  async updateMessageReadStatus(
+    request: Request,
+    updateMessageDto: UpdateMessageDto,
+  ) {
+    const user = request.user as User;
+    const existedMessage = await this.messageRepository
+      .createQueryBuilder('m')
+      .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
+      .where('m.id = :msgId', { msgId: updateMessageDto.messageId })
+      .getOne();
+
+    existedMessage.seenByUsers.push(user);
+    return this.messageRepository.save(existedMessage);
   }
 }

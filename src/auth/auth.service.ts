@@ -51,21 +51,22 @@ export class AuthService {
   }
 
   async generateTokens(payload: JwtPayload): Promise<Tokens> {
-    const tokenId = randomUUID();
+    if (!payload.tokenId) {
+      payload.tokenId = randomUUID();
+    }
     const expireTime = +this.configService.get<number>('REFRESH_TOKEN_TTL');
 
     const accessToken = this.jwtService.sign({
       ...payload,
-      tokenId,
     } as JwtPayload);
     const refreshToken = this.jwtService.sign(
-      { sub: payload.sub, tokenId } as RefreshTokenPayload,
+      { sub: payload.sub, tokenId: payload.tokenId } as RefreshTokenPayload,
       {
         expiresIn: expireTime,
       },
     );
 
-    this.refreshTokenIdsStorage.insert(payload.sub, tokenId);
+    this.refreshTokenIdsStorage.insert(payload.sub, payload.tokenId);
 
     return { accessToken, refreshToken };
   }

@@ -20,6 +20,7 @@ export class GlobalInterceptor implements NestInterceptor {
       hasTokens =
         'accessToken' in request.user && 'refreshToken' in request.user;
     }
+
     return next.handle().pipe(
       map((data) => ({
         data: instanceToPlain(data),

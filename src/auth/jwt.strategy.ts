@@ -39,8 +39,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let tokens = undefined;
     if (now > payload.exp) {
       tokens = await this.authService.generateTokens({
-        sub: payload.sub,
         name: payload.name,
+        sub: payload.sub,
+        tokenId: payload.tokenId,
       });
     }
     const user = await this.userRepository.findOne({
