@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -31,5 +32,12 @@ export class ConversationController {
       request,
       createConversationDto,
     );
+  }
+
+  @Get('get-list')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get conversation list of current user' })
+  getList(@Req() request: Request) {
+    return this.conversationService.getList(request);
   }
 }

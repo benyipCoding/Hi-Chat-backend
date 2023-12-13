@@ -28,6 +28,7 @@ export class Conversation {
   @OneToOne(() => Message, {
     createForeignKeyConstraints: false,
     nullable: true,
+    cascade: ['remove'],
   })
   @JoinColumn({ name: 'last_message_id' })
   lastMessage: Message;

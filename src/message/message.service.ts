@@ -20,7 +20,7 @@ export class MessageService {
     private readonly event: EventEmitter2,
   ) {}
 
-  // create conversation
+  // create message
   async create(request: Request, createMessageDto: CreateMessageDto) {
     const existedConversation = await this.conversationRepository
       .createQueryBuilder('c')
@@ -37,6 +37,7 @@ export class MessageService {
       sender: request.user,
       conversation: existedConversation,
       seenByUsers: [request.user],
+      senderName: (request.user as User).name,
     });
 
     const targetUser =

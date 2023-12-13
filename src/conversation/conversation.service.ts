@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { Request } from 'express';
 import { User } from 'src/db/entities/user.entity';
@@ -55,5 +60,25 @@ export class ConversationService {
     });
 
     return this.conversationRepository.save(conv);
+  }
+
+  async getList(request: Request) {
+    const currentUser = request.user as User;
+    try {
+      const conversations = await this.conversationRepository
+        .createQueryBuilder('conv')
+        .leftJoinAndSelect('conv.creator', 'creator')
+        .leftJoinAndSelect('conv.recipient', 'recipient')
+        .leftJoinAndSelect('conv.lastMessage', 'lastMessage')
+        .where('conv.creator_id = :userId', { userId: currentUser.id })
+        .orWhere('conv.recipient_id = :userId', { userId: currentUser.id })
+        .orderBy('conv.update_at', 'DESC')
+        .limit(20)
+        .getMany();
+
+      return conversations;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
