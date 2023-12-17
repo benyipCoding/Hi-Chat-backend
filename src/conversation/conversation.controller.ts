@@ -6,13 +6,14 @@ import {
   HttpStatus,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('conversation')
 @UseGuards(JwtAuthGuard)
@@ -37,7 +38,7 @@ export class ConversationController {
   @Get('get-list')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'get conversation list of current user' })
-  getList(@Req() request: Request) {
-    return this.conversationService.getList(request);
+  getList(@Req() request: Request, @Res() response: Response) {
+    return this.conversationService.getList(request, response);
   }
 }

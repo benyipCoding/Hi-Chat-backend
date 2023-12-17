@@ -35,7 +35,7 @@ export class MessageController {
 
   @Get('queryMessagesByConversation')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'create a message data' })
+  @ApiOperation({ summary: 'query messages of conversation' })
   queryMessagesByConversation(@Query('conversationId') conversationId: number) {
     return this.messageService.queryMessagesByConversation(conversationId);
   }
@@ -52,4 +52,11 @@ export class MessageController {
       updateMessageDto,
     );
   }
+
+  // @Get('unread-messages')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'get unread message list' })
+  // getUnreadMessages(@Req() request: Request) {
+  //   this.messageService.getUnreadMessages(request);
+  // }
 }

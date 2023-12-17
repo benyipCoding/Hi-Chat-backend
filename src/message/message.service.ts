@@ -9,6 +9,8 @@ import { User } from 'src/db/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MessageDeliver } from 'src/event/enum';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { UserService } from 'src/user/user.service';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class MessageService {
@@ -18,6 +20,7 @@ export class MessageService {
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
     private readonly event: EventEmitter2,
+    private readonly userService: UserService,
   ) {}
 
   // create message
@@ -55,7 +58,10 @@ export class MessageService {
     return msg;
   }
 
-  async queryMessagesByConversation(conversationId: number) {
+  async queryMessagesByConversation(
+    conversationId: number,
+    limit: number = 30,
+  ) {
     const conversation = await this.conversationRepository.findOneOrFail({
       where: { id: conversationId },
     });
@@ -65,7 +71,7 @@ export class MessageService {
       .leftJoinAndSelect('m.sender', 'sender')
       .where('m.conversation_id = :convId', { convId: conversation.id })
       .orderBy('m.create_at', 'DESC')
-      .limit(30)
+      .limit(limit)
       .getMany();
 
     return messages;
@@ -84,5 +90,32 @@ export class MessageService {
 
     existedMessage.seenByUsers.push(user);
     return this.messageRepository.save(existedMessage);
+  }
+
+  async queryUnreadMessagesCountByConversation(
+    currentUser: User,
+    conversations: Conversation[],
+    client: Subject<string>,
+  ) {
+    const unReadMsgCount = {};
+    for (const conv of conversations) {
+      let count = 0;
+      const messages = await this.messageRepository
+        .createQueryBuilder('m')
+        .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
+        .where('m.conversation_id = :convId', { convId: conv.id })
+        .orderBy('m.create_at', 'DESC')
+        .getMany();
+
+      messages.forEach((msg) => {
+        const me = msg.seenByUsers.find((user) => user.id === currentUser.id);
+        if (!me) {
+          count++;
+        }
+      });
+      if (count === 0) continue;
+      unReadMsgCount[conv.id] = count;
+    }
+    client.next(JSON.stringify({ type: 'count', data: unReadMsgCount }) + ';');
   }
 }

@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { User } from 'src/db/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Conversation } from 'src/db/entities/conversation.entity';
@@ -13,6 +13,8 @@ import { Repository } from 'typeorm';
 // import { Friendship } from 'src/db/entities/friendship.entity';
 import { FriendsService } from 'src/friends/friends.service';
 import { UserService } from 'src/user/user.service';
+import { Subject } from 'rxjs';
+import { MessageService } from 'src/message/message.service';
 
 @Injectable()
 export class ConversationService {
@@ -21,6 +23,7 @@ export class ConversationService {
     private readonly conversationRepository: Repository<Conversation>,
     private readonly friendsService: FriendsService,
     private readonly userService: UserService,
+    private readonly messageService: MessageService,
   ) {}
 
   async createConversation(
@@ -62,7 +65,12 @@ export class ConversationService {
     return this.conversationRepository.save(conv);
   }
 
-  async getList(request: Request) {
+  async getList(request: Request, response: Response) {
+    const client = new Subject<string>();
+    client.subscribe((data) => {
+      response.write(data);
+    });
+
     const currentUser = request.user as User;
     try {
       const conversations = await this.conversationRepository
@@ -71,12 +79,25 @@ export class ConversationService {
         .leftJoinAndSelect('conv.recipient', 'recipient')
         .leftJoinAndSelect('conv.lastMessage', 'lastMessage')
         .where('conv.creator_id = :userId', { userId: currentUser.id })
-        .orWhere('conv.recipient_id = :userId', { userId: currentUser.id })
+        .orWhere('conv.recipient_id = :userId', {
+          userId: currentUser.id,
+        })
         .orderBy('conv.update_at', 'DESC')
-        .limit(20)
+        .limit(30)
         .getMany();
+      const filterConv = conversations.filter((c) => c.lastMessage);
+      response.flushHeaders();
+      client.next(
+        JSON.stringify({ type: 'conversations', data: filterConv }) + ';',
+      );
 
-      return conversations;
+      await this.messageService.queryUnreadMessagesCountByConversation(
+        currentUser,
+        filterConv,
+        client,
+      );
+
+      response.end();
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
