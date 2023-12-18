@@ -1,3 +1,4 @@
+import { UpdateConversationDto } from './dto/update-conversation.dto';
 import {
   BadRequestException,
   HttpException,
@@ -15,6 +16,7 @@ import { FriendsService } from 'src/friends/friends.service';
 import { UserService } from 'src/user/user.service';
 import { Subject } from 'rxjs';
 import { MessageService } from 'src/message/message.service';
+import { Message } from 'src/db/entities/message.entity';
 
 @Injectable()
 export class ConversationService {
@@ -24,6 +26,8 @@ export class ConversationService {
     private readonly friendsService: FriendsService,
     private readonly userService: UserService,
     private readonly messageService: MessageService,
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
   ) {}
 
   async createConversation(
@@ -101,5 +105,39 @@ export class ConversationService {
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async setAllMessagesReadStatusByConversation(
+    request: Request,
+    updateConversationDto: UpdateConversationDto,
+  ) {
+    const currentUser = await this.userService.findUserById(
+      (request.user as User).id,
+    );
+
+    const messages = await this.messageRepository
+      .createQueryBuilder('m')
+      .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
+      .leftJoinAndSelect('m.sender', 'sender')
+      .where('m.conversation_id = :convId', {
+        convId: updateConversationDto.conversationId,
+      })
+      .andWhere('m.sender_id != :senderId', {
+        senderId: currentUser.id,
+      })
+      .orderBy('m.create_at', 'DESC')
+      .getMany();
+
+    messages
+      .filter(
+        (msg) =>
+          !msg.seenByUsers.map((user) => user.id).includes(currentUser.id),
+      )
+      .forEach(async (msg) => {
+        msg.seenByUsers.push(currentUser);
+        await this.messageRepository.save(msg);
+      });
+
+    return;
   }
 }

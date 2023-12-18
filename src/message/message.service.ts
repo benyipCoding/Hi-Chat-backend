@@ -100,12 +100,7 @@ export class MessageService {
     const unReadMsgCount = {};
     for (const conv of conversations) {
       let count = 0;
-      const messages = await this.messageRepository
-        .createQueryBuilder('m')
-        .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
-        .where('m.conversation_id = :convId', { convId: conv.id })
-        .orderBy('m.create_at', 'DESC')
-        .getMany();
+      const messages = await this.queryMessagesLeftJoinSeenByUser(conv.id);
 
       messages.forEach((msg) => {
         const me = msg.seenByUsers.find((user) => user.id === currentUser.id);
@@ -117,5 +112,14 @@ export class MessageService {
       unReadMsgCount[conv.id] = count;
     }
     client.next(JSON.stringify({ type: 'count', data: unReadMsgCount }) + ';');
+  }
+
+  async queryMessagesLeftJoinSeenByUser(conversationId: number) {
+    return this.messageRepository
+      .createQueryBuilder('m')
+      .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
+      .where('m.conversation_id = :convId', { convId: conversationId })
+      .orderBy('m.create_at', 'DESC')
+      .getMany();
   }
 }

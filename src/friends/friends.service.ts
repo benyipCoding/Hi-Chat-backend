@@ -114,6 +114,7 @@ export class FriendsService {
       sender: targetInvitation.sender,
       receiver: targetInvitation.receiver,
     });
+
     return this.friendshipRepository.save(friendshipData);
   }
 
