@@ -25,7 +25,7 @@ export class Message {
   @CreateDateColumn({ name: 'create_at', type: 'datetime' })
   createAt: Date;
 
-  @ManyToOne(() => User, (user) => user.messages, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.messages)
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 
@@ -33,7 +33,7 @@ export class Message {
   @JoinTable({ name: 'seen_users' })
   seenByUsers: User[];
 
-  @ManyToOne(() => Conversation, (con) => con.messages, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Conversation, (con) => con.messages)
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 

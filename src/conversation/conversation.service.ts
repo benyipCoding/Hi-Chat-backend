@@ -11,7 +11,6 @@ import { User } from 'src/db/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Conversation } from 'src/db/entities/conversation.entity';
 import { Repository } from 'typeorm';
-// import { Friendship } from 'src/db/entities/friendship.entity';
 import { FriendsService } from 'src/friends/friends.service';
 import { UserService } from 'src/user/user.service';
 import { Subject } from 'rxjs';

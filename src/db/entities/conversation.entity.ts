@@ -42,7 +42,7 @@ export class Conversation {
   recipient: User;
 
   @OneToMany(() => Message, (message) => message.conversation, {
-    cascade: ['insert', 'remove', 'update'],
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   messages: Message[];
