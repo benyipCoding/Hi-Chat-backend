@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Message } from './message.entity';
 import { Gender } from '../types';
+import { Nickname } from './nickName.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -45,4 +46,7 @@ export class User {
 
   @Column({ type: 'enum', enum: ['male', 'female'] })
   gender: Gender;
+
+  @OneToMany(() => Nickname, (nick) => nick.owner, { onDelete: 'CASCADE' })
+  nicknameStore: Nickname[];
 }

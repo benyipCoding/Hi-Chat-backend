@@ -5,11 +5,14 @@ import {
   HttpStatus,
   UseGuards,
   Req,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { UserService } from './user.service';
 import { Request } from 'express';
+import { ChangeNicknameDto } from './dto/change-nickname.dto';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -32,24 +35,20 @@ export class UserController {
     return this.userService.getFriendList(request);
   }
 
-  // @Get('import')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'import mock data' })
-  // importData() {
-  //   return this.importService.importData();
-  // }
-
-  // @Get('mockFriends')
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'add mock friends data' })
-  // addFriendsInBenUser(@Req() request: Request) {
-  //   return this.importService.addFriendsInBenUser(request);
-  // }
-
   @Get('all-stranger')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'fetch all stranger' })
   getStrangerList(@Req() request: Request) {
     return this.userService.getStrangerList(request);
+  }
+
+  @Post('changeNickname')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'change friend nickname' })
+  changeNickname(
+    @Req() request: Request,
+    @Body() changeNicknameDto: ChangeNicknameDto,
+  ) {
+    return this.userService.changeNickname(request, changeNicknameDto);
   }
 }

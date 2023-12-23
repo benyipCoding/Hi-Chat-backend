@@ -37,7 +37,9 @@ export class ConversationService {
     const currentUser = await this.userService.findUserById(
       (request.user as User).id,
     );
-    const targetUser = createConversationDto.target;
+    const targetUser = await this.userService.findUserById(
+      createConversationDto.target.id,
+    );
 
     if (!(await this.userService.isUserExisted(targetUser.id)))
       throw new BadRequestException('User is not existed!');
@@ -82,14 +84,24 @@ export class ConversationService {
         .leftJoinAndSelect('conv.creator', 'creator')
         .leftJoinAndSelect('conv.recipient', 'recipient')
         .leftJoinAndSelect('conv.lastMessage', 'lastMessage')
-        .where('conv.creator_id = :userId', { userId: currentUser.id })
-        .orWhere('conv.recipient_id = :userId', {
+        .where('conv.creator.id = :userId', { userId: currentUser.id })
+        .orWhere('conv.recipient.id = :userId', {
           userId: currentUser.id,
         })
-        .orderBy('conv.update_at', 'DESC')
+        .orderBy('conv.lastMessage.id', 'DESC')
         .limit(30)
         .getMany();
       const filterConv = conversations.filter((c) => c.lastMessage);
+      for (const conv of filterConv) {
+        const nickname = await this.userService.findNicknameById(
+          currentUser.id,
+          conv.creator.id === currentUser.id
+            ? conv.recipient.id
+            : conv.creator.id,
+        );
+        (conv as any).name = nickname.nickname;
+      }
+
       response.flushHeaders();
       client.next(
         JSON.stringify({ type: 'conversations', data: filterConv }) + ';',

@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { hashPassword } from 'src/utils/helpers';
 import { Request } from 'express';
 import { Friendship } from 'src/db/entities/friendship.entity';
+import { ChangeNicknameDto } from './dto/change-nickname.dto';
+import { Nickname } from 'src/db/entities/nickName.entity';
 
 @Injectable()
 export class UserService {
@@ -13,6 +15,8 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Friendship)
     private readonly friendshipRepository: Repository<Friendship>,
+    @InjectRepository(Nickname)
+    private readonly nicknameRepository: Repository<Nickname>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -53,11 +57,23 @@ export class UserService {
     const userId = (request.user as User).id;
     const friend_ids = await this.queryFriendIdsByUserId(userId);
     if (!friend_ids?.length) return [];
-    return this.userRepository
+    const friendList = await this.userRepository
       .createQueryBuilder('u')
       .where('u.id IN (:...friends)', { friends: friend_ids })
       .orderBy('u.name')
       .getMany();
+
+    const friendListWithNickname = [];
+
+    for (const friend of friendList) {
+      const nickname = await this.findNicknameById(userId, friend.id);
+      friendListWithNickname.push({
+        ...friend,
+        nickname: nickname?.nickname || friend.name,
+      });
+    }
+
+    return friendListWithNickname;
   }
 
   async getStrangerList(request: Request) {
@@ -78,5 +94,45 @@ export class UserService {
 
   findUserById(userId: string): Promise<User> {
     return this.userRepository.findOneBy({ id: userId });
+  }
+
+  async changeNickname(request: Request, changeNicknameDto: ChangeNicknameDto) {
+    console.log(changeNicknameDto.targetUserId);
+    console.log(changeNicknameDto.nickname);
+    // check targetUser is existed or not
+    const currentUser = await this.findUserById((request.user as User).id);
+
+    const targetUser = await this.userRepository.findOneByOrFail({
+      id: changeNicknameDto.targetUserId,
+    });
+
+    const existedNickname = await this.findNicknameById(
+      currentUser.id,
+      targetUser.id,
+    );
+
+    if (existedNickname) {
+      existedNickname.nickname = changeNicknameDto.nickname;
+      return this.nicknameRepository.save(existedNickname);
+    }
+
+    const nickname = await this.nicknameRepository.create({
+      owner: currentUser,
+      nickname: changeNicknameDto.nickname,
+      targetUser,
+    });
+    return this.nicknameRepository.save(nickname);
+  }
+
+  findNicknameById(currentUserId: string, targetUserId: string) {
+    return this.nicknameRepository
+      .createQueryBuilder('n')
+      .leftJoinAndSelect('n.owner', 'owner')
+      .leftJoinAndSelect('n.targetUser', 'targetUser')
+      .where('n.ownerId = :currentId AND n.target_user = :targetId', {
+        currentId: currentUserId,
+        targetId: targetUserId,
+      })
+      .getOne();
   }
 }

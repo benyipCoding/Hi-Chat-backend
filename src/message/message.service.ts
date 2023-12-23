@@ -119,7 +119,7 @@ export class MessageService {
       .createQueryBuilder('m')
       .leftJoinAndSelect('m.seenByUsers', 'seenByUsers')
       .where('m.conversation_id = :convId', { convId: conversationId })
-      .orderBy('m.create_at', 'DESC')
+      .orderBy('m.id', 'DESC')
       .getMany();
   }
 }
