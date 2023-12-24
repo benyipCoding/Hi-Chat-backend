@@ -98,17 +98,35 @@ export class ConversationService {
             ? conv.recipient.id
             : conv.creator.id,
         );
-        (conv as any).name = nickname.nickname;
+        (conv as any).name =
+          nickname?.nickname || currentUser.id === conv.creator.id
+            ? conv.recipient.name
+            : conv.creator.name;
+      }
+
+      const filterConvByFriendship = [];
+      for (const conv of filterConv) {
+        const targetUser =
+          conv.creator.id === currentUser.id ? conv.recipient : conv.creator;
+        const isFriend = await this.friendsService.isFriend(
+          currentUser,
+          targetUser,
+        );
+        if (!isFriend) continue;
+        filterConvByFriendship.push(conv);
       }
 
       response.flushHeaders();
       client.next(
-        JSON.stringify({ type: 'conversations', data: filterConv }) + ';',
+        JSON.stringify({
+          type: 'conversations',
+          data: filterConvByFriendship,
+        }) + ';',
       );
 
       await this.messageService.queryUnreadMessagesCountByConversation(
         currentUser,
-        filterConv,
+        filterConvByFriendship,
         client,
       );
 

@@ -11,6 +11,7 @@ import { MessageDeliver } from 'src/event/enum';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { UserService } from 'src/user/user.service';
 import { Subject } from 'rxjs';
+import { FriendsService } from 'src/friends/friends.service';
 
 @Injectable()
 export class MessageService {
@@ -20,6 +21,7 @@ export class MessageService {
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
     private readonly event: EventEmitter2,
+    private readonly friendsService: FriendsService,
     private readonly userService: UserService,
   ) {}
 
@@ -35,6 +37,23 @@ export class MessageService {
     if (!existedConversation)
       throw new BadRequestException('The Conversation is not existed!');
 
+    const targetUser =
+      existedConversation.creator.id === (request.user as User).id
+        ? existedConversation.recipient
+        : existedConversation.creator;
+
+    const currentUser = await this.userService.findUserById(
+      (request.user as User).id,
+    );
+
+    const isFriend = await this.friendsService.isFriend(
+      currentUser,
+      targetUser,
+    );
+
+    if (!isFriend)
+      throw new BadRequestException('You are not friends any more!');
+
     const message = await this.messageRepository.create({
       content: createMessageDto.content,
       sender: request.user,
@@ -42,11 +61,6 @@ export class MessageService {
       seenByUsers: [request.user],
       senderName: (request.user as User).name,
     });
-
-    const targetUser =
-      existedConversation.creator.id === (request.user as User).id
-        ? existedConversation.recipient
-        : existedConversation.creator;
 
     const msg = await this.messageRepository.save(message);
     existedConversation.lastMessageAt = msg.createAt;

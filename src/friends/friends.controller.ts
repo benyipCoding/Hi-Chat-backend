@@ -7,6 +7,7 @@ import {
   Req,
   Body,
   Get,
+  Param,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -44,5 +45,12 @@ export class FriendsController {
   @ApiOperation({ summary: 'change friendship status' })
   changeFriendship(@Body() changeFriendshipDto: ChangeFriendshipDto) {
     return this.friendsService.changeFriendship(changeFriendshipDto);
+  }
+
+  @Post('delete-friendship/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'delete friendship with user id' })
+  deleteFriendship(@Req() request: Request, @Param('id') targetUserId: string) {
+    return this.friendsService.deleteFriendship(request, targetUserId);
   }
 }

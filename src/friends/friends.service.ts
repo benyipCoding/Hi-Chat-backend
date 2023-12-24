@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -119,18 +119,62 @@ export class FriendsService {
   }
 
   async isFriend(currentUser: User, targetUser: User): Promise<boolean> {
-    const res = await this.friendshipRepository.find({
-      where: [
-        {
-          sender: currentUser,
-          receiver: targetUser,
-        },
-        {
-          sender: targetUser,
-          receiver: currentUser,
-        },
-      ],
-    });
+    const res = await this.friendshipRepository
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.sender', 'sender')
+      .leftJoinAndSelect('f.receiver', 'receiver')
+      .where('f.sender.id = :currentId AND f.receiver.id = :targetId', {
+        currentId: currentUser.id,
+        targetId: targetUser.id,
+      })
+      .orWhere('f.sender.id = :targetId AND f.receiver.id = :currentId', {
+        currentId: currentUser.id,
+        targetId: targetUser.id,
+      })
+      .getOne();
+    console.log(res);
+
     return res !== null;
+  }
+
+  async deleteFriendship(request: Request, targetUserId: string) {
+    console.log(targetUserId);
+
+    const friendship = await this.friendshipRepository
+
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.sender', 'sender')
+      .leftJoinAndSelect('f.receiver', 'receiver')
+      .where('f.sender.id = :currentId AND f.receiver.id = :targetId', {
+        currentId: (request.user as User).id,
+        targetId: targetUserId,
+      })
+      .orWhere('f.sender.id = :targetId AND f.receiver.id = :currentId', {
+        currentId: (request.user as User).id,
+        targetId: targetUserId,
+      })
+      .getOne();
+
+    if (!friendship)
+      throw new BadRequestException('Can not find the relationship!');
+    const invitation = await this.friendsRepository
+      .createQueryBuilder('f')
+      .leftJoinAndSelect('f.sender', 'sender')
+      .leftJoinAndSelect('f.receiver', 'receiver')
+      .where('f.sender.id = :currentId AND f.receiver.id = :targetId', {
+        currentId: (request.user as User).id,
+        targetId: targetUserId,
+      })
+      .orWhere('f.sender.id = :targetId AND f.receiver.id = :currentId', {
+        currentId: (request.user as User).id,
+        targetId: targetUserId,
+      })
+      .getOne();
+
+    this.friendshipRepository.remove(friendship);
+    this.friendsRepository.remove(invitation);
+
+    this.event.emit(FriendRequest.REFRESH_FRIENDS, targetUserId);
+    return 'success';
   }
 }

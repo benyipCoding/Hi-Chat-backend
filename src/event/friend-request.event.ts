@@ -16,7 +16,6 @@ export class FriendRequestEvent {
     private readonly socketManager: SocketManagerStorage,
     @InjectRepository(Friends)
     private readonly friendsRepository: Repository<Friends>,
-    private readonly event: EventEmitter2,
   ) {}
 
   private logger = new Logger('friend-request');
@@ -60,5 +59,15 @@ export class FriendRequestEvent {
       return this.logger.error('there is no socketId to transfer');
     }
     this.wsGateway.server.to(payload).emit(SocketEvent.FRIEND_REQUEST);
+  }
+
+  @OnEvent(FriendRequest.REFRESH_FRIENDS)
+  async noticeClientToRefreshInvitationsApiByUserId(payload: string) {
+    if (!payload) {
+      return this.logger.error('there is no userId to transfer');
+    }
+    const socketId = await this.socketManager.getSocketId(payload);
+    if (!socketId) return this.logger.error('there is no socketId to transfer');
+    this.wsGateway.server.to(socketId).emit(SocketEvent.FRIEND_REQUEST);
   }
 }
