@@ -21,7 +21,7 @@ export class Nickname {
   @JoinColumn()
   owner: User;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, { createForeignKeyConstraints: false })
   @JoinColumn({ name: 'target_user' })
   targetUser: User;
 

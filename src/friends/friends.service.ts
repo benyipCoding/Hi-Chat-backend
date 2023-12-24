@@ -132,14 +132,11 @@ export class FriendsService {
         targetId: targetUser.id,
       })
       .getOne();
-    console.log(res);
 
     return res !== null;
   }
 
   async deleteFriendship(request: Request, targetUserId: string) {
-    console.log(targetUserId);
-
     const friendship = await this.friendshipRepository
 
       .createQueryBuilder('f')

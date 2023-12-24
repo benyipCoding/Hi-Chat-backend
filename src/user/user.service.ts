@@ -97,8 +97,6 @@ export class UserService {
   }
 
   async changeNickname(request: Request, changeNicknameDto: ChangeNicknameDto) {
-    console.log(changeNicknameDto.targetUserId);
-    console.log(changeNicknameDto.nickname);
     // check targetUser is existed or not
     const currentUser = await this.findUserById((request.user as User).id);
 
