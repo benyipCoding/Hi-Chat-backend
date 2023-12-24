@@ -1,7 +1,7 @@
 import { SocketManagerStorage } from 'src/websocket/socket-manager.storage';
 import { Injectable, Logger } from '@nestjs/common';
 import { WebsocketGateway } from 'src/websocket/websocket.gateway';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 import { FriendRequest } from './enum';
 import { Friends } from 'src/db/entities/friends.entity';
 import { SocketEvent } from 'src/utils/enum';
