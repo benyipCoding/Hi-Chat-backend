@@ -11,6 +11,7 @@ import { ChangeFriendshipDto } from './dto/change-friendship.dto';
 import { FriendshipStatus } from 'src/db/types';
 import { SocketManagerStorage } from 'src/websocket/socket-manager.storage';
 import { Friendship } from 'src/db/entities/friendship.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class FriendsService {
@@ -23,6 +24,7 @@ export class FriendsService {
     private readonly socketManager: SocketManagerStorage,
     @InjectRepository(Friendship)
     private readonly friendshipRepository: Repository<Friendship>,
+    private readonly userService: UserService,
   ) {}
 
   async friendInvitation(request: Request, createFriendDto: CreateFriendDto) {
@@ -73,25 +75,40 @@ export class FriendsService {
       .getMany();
     if (!res?.length) return [];
 
-    return res.map((item: Friends) => ({
-      ...item,
-      sender: {
-        id: item.sender.id,
-        name: item.sender.name,
-        avatar: item.sender.avatar,
-        gender: item.sender.gender,
-        email: item.sender.email,
-        displayName: item.sender.displayName,
-      },
-      receiver: {
-        id: item.receiver.id,
-        name: item.receiver.name,
-        avatar: item.receiver.avatar,
-        gender: item.receiver.gender,
-        email: item.receiver.email,
-        displayName: item.receiver.displayName,
-      },
-    }));
+    for (const invitation of res) {
+      const targetUser =
+        invitation.sender.id !== (request.user as User).id
+          ? invitation.sender
+          : invitation.receiver;
+      const nickname = await this.userService.findNicknameById(
+        (request.user as User).id,
+        targetUser.id,
+      );
+      (targetUser as any).nickname =
+        nickname?.nickname || targetUser.displayName;
+    }
+
+    return res;
+
+    // return res.map((item: Friends) => ({
+    //   ...item,
+    //   sender: {
+    //     id: item.sender.id,
+    //     name: item.sender.name,
+    //     avatar: item.sender.avatar,
+    //     gender: item.sender.gender,
+    //     email: item.sender.email,
+    //     displayName: item.sender.displayName,
+    //   },
+    //   receiver: {
+    //     id: item.receiver.id,
+    //     name: item.receiver.name,
+    //     avatar: item.receiver.avatar,
+    //     gender: item.receiver.gender,
+    //     email: item.receiver.email,
+    //     displayName: item.receiver.displayName,
+    //   },
+    // }));
   }
 
   async changeFriendship(changeFriendshipDto: ChangeFriendshipDto) {
