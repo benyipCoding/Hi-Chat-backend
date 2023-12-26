@@ -81,6 +81,7 @@ export class FriendsService {
         avatar: item.sender.avatar,
         gender: item.sender.gender,
         email: item.sender.email,
+        displayName: item.sender.displayName,
       },
       receiver: {
         id: item.receiver.id,
@@ -88,6 +89,7 @@ export class FriendsService {
         avatar: item.receiver.avatar,
         gender: item.receiver.gender,
         email: item.receiver.email,
+        displayName: item.receiver.displayName,
       },
     }));
   }

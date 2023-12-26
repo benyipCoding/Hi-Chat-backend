@@ -35,6 +35,7 @@ export class UserService {
       ...createUserDto,
       name: createUserDto.userName,
       password: hashedPassword,
+      displayName: createUserDto.userName,
     };
     const newUser = await this.userRepository.create(payload);
     return this.userRepository.save(newUser);
@@ -69,7 +70,7 @@ export class UserService {
       const nickname = await this.findNicknameById(userId, friend.id);
       friendListWithNickname.push({
         ...friend,
-        nickname: nickname?.nickname || friend.name,
+        nickname: nickname?.nickname || null,
       });
     }
 

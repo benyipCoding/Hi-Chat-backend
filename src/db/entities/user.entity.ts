@@ -49,4 +49,7 @@ export class User {
 
   @OneToMany(() => Nickname, (nick) => nick.owner, { onDelete: 'CASCADE' })
   nicknameStore: Nickname[];
+
+  @Column({ name: 'display_name' })
+  displayName: string;
 }

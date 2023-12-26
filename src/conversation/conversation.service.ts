@@ -102,7 +102,8 @@ export class ConversationService {
         const targetUser =
           conv.creator.id !== currentUser.id ? conv.creator : conv.recipient;
 
-        (conv as any).name = nickname?.nickname || targetUser.name;
+        (conv as any).name =
+          nickname?.nickname || targetUser.displayName || targetUser.name;
       }
 
       const filterConvByFriendship = [];
