@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { UserService } from './user.service';
 import { Request } from 'express';
 import { ChangeNicknameDto } from './dto/change-nickname.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -50,5 +51,15 @@ export class UserController {
     @Body() changeNicknameDto: ChangeNicknameDto,
   ) {
     return this.userService.changeNickname(request, changeNicknameDto);
+  }
+
+  @Post('update-userInfo')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'update user information' })
+  updateUserInfo(
+    @Req() request: Request,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateUserInfo(request, updateUserDto);
   }
 }

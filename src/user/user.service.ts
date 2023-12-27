@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../db/entities/user.entity';
@@ -8,6 +13,7 @@ import { Request } from 'express';
 import { Friendship } from 'src/db/entities/friendship.entity';
 import { ChangeNicknameDto } from './dto/change-nickname.dto';
 import { Nickname } from 'src/db/entities/nickName.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -133,5 +139,17 @@ export class UserService {
         targetId: targetUserId,
       })
       .getOne();
+  }
+
+  async updateUserInfo(request: Request, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.findUserById((request.user as User).id);
+      user.displayName = updateUserDto.displayName;
+      user.gender = updateUserDto.gender;
+      user.email = updateUserDto.email;
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw new BadRequestException('Please check your input');
+    }
   }
 }

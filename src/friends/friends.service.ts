@@ -89,26 +89,6 @@ export class FriendsService {
     }
 
     return res;
-
-    // return res.map((item: Friends) => ({
-    //   ...item,
-    //   sender: {
-    //     id: item.sender.id,
-    //     name: item.sender.name,
-    //     avatar: item.sender.avatar,
-    //     gender: item.sender.gender,
-    //     email: item.sender.email,
-    //     displayName: item.sender.displayName,
-    //   },
-    //   receiver: {
-    //     id: item.receiver.id,
-    //     name: item.receiver.name,
-    //     avatar: item.receiver.avatar,
-    //     gender: item.receiver.gender,
-    //     email: item.receiver.email,
-    //     displayName: item.receiver.displayName,
-    //   },
-    // }));
   }
 
   async changeFriendship(changeFriendshipDto: ChangeFriendshipDto) {
