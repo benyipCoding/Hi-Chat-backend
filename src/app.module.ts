@@ -11,6 +11,7 @@ import { FriendsModule } from './friends/friends.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './event/events.module';
 import { MessageModule } from './message/message.module';
+import { UploadModule } from './upload/upload.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -47,6 +48,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     EventEmitterModule.forRoot(),
     EventsModule,
     MessageModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [],
