@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UploadService } from './upload.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Request, Response } from 'express';
 
 @Controller('upload')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+@ApiTags('Upload module')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post()
-  create(@Body() createUploadDto: CreateUploadDto) {
-    return this.uploadService.create(createUploadDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.uploadService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.uploadService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUploadDto: UpdateUploadDto) {
-    return this.uploadService.update(+id, updateUploadDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.uploadService.remove(+id);
+  @Post('avatar')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'upload avatar endpoint' })
+  @UseInterceptors(FileInterceptor('avatar'))
+  uploadAvatar(
+    @Req() request: Request,
+    @UploadedFile() file: any,
+    @Res() response: Response,
+  ) {
+    return this.uploadService.uploadAvatar(request, file, response);
   }
 }

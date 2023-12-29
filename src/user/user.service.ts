@@ -152,4 +152,18 @@ export class UserService {
       throw new BadRequestException('Please check your input');
     }
   }
+
+  async updateAvatarByUserId(
+    userId: string,
+    avatar: string,
+    avatarKey: string,
+  ) {
+    const user = await this.findUserById(userId);
+    if (!user)
+      throw new HttpException('User does not existed!', HttpStatus.BAD_REQUEST);
+    user.avatar = avatar;
+    user.avatarKey = avatarKey;
+
+    return this.userRepository.save(user);
+  }
 }
