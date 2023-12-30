@@ -66,7 +66,6 @@ export class MessageService {
     existedConversation.lastMessageAt = msg.createAt;
     existedConversation.lastMessage = msg;
     this.conversationRepository.save(existedConversation);
-
     this.event.emit(MessageDeliver.SEND_MSG_TO, { targetUser, message: msg });
 
     return msg;

@@ -12,6 +12,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './event/events.module';
 import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
+import { GroupConversationModule } from './group-conversation/group-conversation.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -49,6 +50,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     EventsModule,
     MessageModule,
     UploadModule,
+    GroupConversationModule,
   ],
   controllers: [],
   providers: [],

@@ -12,6 +12,7 @@ import {
 import { Message } from './message.entity';
 import { Gender } from '../types';
 import { Nickname } from './nickName.entity';
+import { GroupConversation } from './group-conversation.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -55,4 +56,7 @@ export class User {
 
   @Column({ name: 'avatar_key', comment: 'COS avatar key', nullable: true })
   avatarKey: string;
+
+  @ManyToMany(() => GroupConversation, (gc) => gc.members)
+  groupConversations: GroupConversation[];
 }
