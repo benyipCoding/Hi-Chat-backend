@@ -53,6 +53,6 @@ export class User {
   @Column({ name: 'display_name' })
   displayName: string;
 
-  @Column({ name: 'avatar_key', comment: 'COS avatar key' })
+  @Column({ name: 'avatar_key', comment: 'COS avatar key', nullable: true })
   avatarKey: string;
 }
