@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  GatewayTimeoutException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as COS from 'cos-nodejs-sdk-v5';
 import { unlinkSync, readFileSync } from 'node:fs';
@@ -22,6 +27,15 @@ export class UploadService {
   }
 
   async uploadAvatar(request: Request, file: any, response: Response) {
+    const lastUpdateTimeStamp = new Date(
+      (request.user as User).updateAt,
+    ).getTime();
+    if (Date.now() - lastUpdateTimeStamp < 60000) {
+      throw new GatewayTimeoutException(
+        'The request is too frequent. Please try again later',
+      );
+    }
+
     const client = new Subject();
     client.subscribe((data: string) => {
       response.send({

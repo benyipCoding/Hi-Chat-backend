@@ -159,6 +159,7 @@ export class UserService {
     avatarKey: string,
   ) {
     const user = await this.findUserById(userId);
+
     if (!user)
       throw new HttpException('User does not existed!', HttpStatus.BAD_REQUEST);
     user.avatar = avatar;

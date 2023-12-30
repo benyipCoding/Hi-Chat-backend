@@ -59,7 +59,7 @@ export class MessageService {
       sender: request.user,
       conversation: existedConversation,
       seenByUsers: [request.user],
-      senderName: (request.user as User).name,
+      senderName: (request.user as User).displayName,
     });
 
     const msg = await this.messageRepository.save(message);
