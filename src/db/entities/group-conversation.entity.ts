@@ -18,6 +18,9 @@ export class GroupConversation {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: false })
+  name: string;
+
   @CreateDateColumn({ name: 'create_at', type: 'datetime' })
   createAt: Date;
 

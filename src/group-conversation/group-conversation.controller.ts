@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -30,5 +31,12 @@ export class GroupConversationController {
     @Body() gcDto: CreateGroupConversationDto,
   ) {
     return this.groupConversationService.createGroup(request, gcDto);
+  }
+
+  @Get('get-conv-list')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get group conversation list' })
+  getGroupConversationList(@Req() request: Request) {
+    return this.groupConversationService.getGroupConversationList(request);
   }
 }

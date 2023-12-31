@@ -15,6 +15,33 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class GroupConversationService {
+  private readonly queryGroupByUserId: string = `
+  SELECT *
+  FROM group_conversation gc
+  WHERE gc.id IN (
+          SELECT
+              gcu.groupConversationId
+          FROM gc_user gcu
+          WHERE
+              gcu.usersId = ?
+      )
+  ORDER BY gc.update_at DESC;`;
+
+  private readonly queryMembersByGroupConvId: string = `select u.id,
+  u.avatar,
+  u.avatar_key,
+  u.display_name,
+  u.email,
+  u.gender,
+  u.name
+  FROM (
+          SELECT gcu.usersId
+          FROM gc_user gcu
+          WHERE
+              gcu.groupConversationId = ?
+      ) t
+      LEFT JOIN users u ON u.id = t.usersId`;
+
   constructor(
     private readonly userService: UserService,
     private readonly friendsService: FriendsService,
@@ -27,7 +54,6 @@ export class GroupConversationService {
       (request.user as User).id,
     );
     const count = await this.countByCreator(currentUser);
-    console.log(count);
     if (count >= 5) {
       throw new HttpException(
         'Sorry, each user can only create 5 groups',
@@ -50,6 +76,7 @@ export class GroupConversationService {
     const gc = await this.groupConvRepository.create({
       creator: currentUser,
       members,
+      name: gcDto.groupName,
     });
 
     return this.groupConvRepository.save(gc);
@@ -61,5 +88,25 @@ export class GroupConversationService {
       .leftJoinAndSelect('gc.creator', 'creator')
       .where('gc.creator.id = :creatorId', { creatorId: creator.id })
       .getCount();
+  }
+
+  async getGroupConversationList(request: Request) {
+    const groupList = await this.groupConvRepository.manager.transaction(
+      async (entityManager) => {
+        const result = await entityManager.query(this.queryGroupByUserId, [
+          (request.user as User).id,
+        ]);
+
+        for (const res of result) {
+          res.members = await entityManager.query(
+            this.queryMembersByGroupConvId,
+            [res.id],
+          );
+        }
+        return result;
+      },
+    );
+
+    return groupList;
   }
 }
