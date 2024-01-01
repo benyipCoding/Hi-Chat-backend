@@ -33,11 +33,11 @@ export class ConversationService {
     request: Request,
     createConversationDto: CreateConversationDto,
   ) {
-    const currentUser = await this.userService.findUserById(
-      (request.user as User).id,
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
     );
-    const targetUser = await this.userService.findUserById(
-      createConversationDto.target.id,
+    const targetUser = await this.userService.queryCurrentUser(
+      createConversationDto.target,
     );
 
     if (!(await this.userService.isUserExisted(targetUser.id)))
@@ -142,8 +142,8 @@ export class ConversationService {
     request: Request,
     updateConversationDto: UpdateConversationDto,
   ) {
-    const currentUser = await this.userService.findUserById(
-      (request.user as User).id,
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
     );
 
     const messages = await this.messageRepository

@@ -14,5 +14,6 @@ import { FriendsModule } from 'src/friends/friends.module';
   ],
   controllers: [GroupConversationController],
   providers: [GroupConversationService],
+  exports: [GroupConversationService],
 })
 export class GroupConversationModule {}

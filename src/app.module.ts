@@ -13,6 +13,7 @@ import { EventsModule } from './event/events.module';
 import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
 import { GroupConversationModule } from './group-conversation/group-conversation.module';
+import { GroupMessageModule } from './group-message/group-message.module';
 
 const envFilePath = `.env.stage.${process.env.STAGE}`;
 @Module({
@@ -51,6 +52,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
     MessageModule,
     UploadModule,
     GroupConversationModule,
+    GroupMessageModule,
   ],
   controllers: [],
   providers: [],

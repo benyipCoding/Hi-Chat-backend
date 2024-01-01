@@ -105,7 +105,7 @@ export class UserService {
 
   async changeNickname(request: Request, changeNicknameDto: ChangeNicknameDto) {
     // check targetUser is existed or not
-    const currentUser = await this.findUserById((request.user as User).id);
+    const currentUser = await this.queryCurrentUser(request.user as User);
 
     const targetUser = await this.userRepository.findOneByOrFail({
       id: changeNicknameDto.targetUserId,
@@ -143,7 +143,7 @@ export class UserService {
 
   async updateUserInfo(request: Request, updateUserDto: UpdateUserDto) {
     try {
-      const user = await this.findUserById((request.user as User).id);
+      const user = await this.queryCurrentUser(request.user as User);
       user.displayName = updateUserDto.displayName;
       user.gender = updateUserDto.gender;
       user.email = updateUserDto.email;
@@ -166,5 +166,12 @@ export class UserService {
     user.avatarKey = avatarKey;
 
     return this.userRepository.save(user);
+  }
+
+  queryCurrentUser(user: User): Promise<User> {
+    if ('accessToken' in user || 'refreshToken' in user) {
+      return this.findUserById(user.id);
+    }
+    return Promise.resolve(user);
   }
 }

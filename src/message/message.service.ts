@@ -42,8 +42,8 @@ export class MessageService {
         ? existedConversation.recipient
         : existedConversation.creator;
 
-    const currentUser = await this.userService.findUserById(
-      (request.user as User).id,
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
     );
 
     const isFriend = await this.friendsService.isFriend(

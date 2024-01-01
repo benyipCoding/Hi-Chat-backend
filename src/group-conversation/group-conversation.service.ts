@@ -41,6 +41,7 @@ export class GroupConversationService {
               gcu.groupConversationId = ?
       ) t
       LEFT JOIN users u ON u.id = t.usersId`;
+  private readonly queryGroupMessageById: string = `SELECT * FROM group_message gm WHERE gm.id = ?;`;
 
   constructor(
     private readonly userService: UserService,
@@ -50,8 +51,8 @@ export class GroupConversationService {
   ) {}
 
   async createGroup(request: Request, gcDto: CreateGroupConversationDto) {
-    const currentUser = await this.userService.findUserById(
-      (request.user as User).id,
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
     );
     const count = await this.countByCreator(currentUser);
     if (count >= 5) {
@@ -102,11 +103,27 @@ export class GroupConversationService {
             this.queryMembersByGroupConvId,
             [res.id],
           );
+          const lastMessage = await entityManager.query(
+            this.queryGroupMessageById,
+            [res.last_message_id],
+          );
+          res.lastMessage = lastMessage.length ? lastMessage[0] : null;
         }
-        return result;
+        return (result as any[]).filter(
+          (res) =>
+            res.lastMessage || res.creator_id === (request.user as User).id,
+        );
       },
     );
 
     return groupList;
+  }
+
+  findGroupConversationById(groupConvId: number): Promise<GroupConversation> {
+    return this.groupConvRepository.findOneBy({ id: groupConvId });
+  }
+
+  updateLastMessage(groupConv: GroupConversation) {
+    return this.groupConvRepository.save(groupConv);
   }
 }
