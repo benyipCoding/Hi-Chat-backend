@@ -7,12 +7,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   OneToMany,
-  JoinColumn,
+  // JoinColumn,
 } from 'typeorm';
 import { Message } from './message.entity';
 import { Gender } from '../types';
 import { Nickname } from './nickName.entity';
 import { GroupConversation } from './group-conversation.entity';
+import { GroupMessage } from './group-message.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -38,12 +39,11 @@ export class User {
   @UpdateDateColumn({ name: 'update_at', type: 'datetime' })
   updateAt: Date;
 
-  @OneToMany(() => Message, (message) => message.sender)
-  @JoinColumn()
-  messages: Message[];
-
   @ManyToMany(() => Message, (message) => message.seenByUsers)
   seenMessages: Message[];
+
+  @ManyToMany(() => GroupMessage, (groupMessage) => groupMessage.seenByUsers)
+  seenGroupMessages: GroupMessage[];
 
   @Column({ type: 'enum', enum: ['male', 'female'] })
   gender: Gender;

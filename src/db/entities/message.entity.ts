@@ -1,8 +1,8 @@
 import {
-  Column,
+  // Column,
   Entity,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
+  // PrimaryGeneratedColumn,
+  // CreateDateColumn,
   ManyToOne,
   JoinColumn,
   ManyToMany,
@@ -10,24 +10,25 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { Conversation } from './conversation.entity';
+import { BaseMessage } from './base-message';
 
 @Entity({ name: 'messages' })
-export class Message {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Message extends BaseMessage {
+  // @PrimaryGeneratedColumn()
+  // id: number;
 
-  @Column()
-  content: string;
+  // @Column()
+  // content: string;
 
-  @Column({ nullable: true })
-  image: string;
+  // @Column({ nullable: true })
+  // image: string;
 
-  @CreateDateColumn({ name: 'create_at', type: 'datetime' })
-  createAt: Date;
+  // @CreateDateColumn({ name: 'create_at', type: 'datetime' })
+  // createAt: Date;
 
-  @ManyToOne(() => User, (user) => user.messages)
-  @JoinColumn({ name: 'sender_id' })
-  sender: User;
+  // @ManyToOne(() => User, { createForeignKeyConstraints: false })
+  // @JoinColumn({ name: 'sender_id' })
+  // sender: User;
 
   @ManyToMany(() => User, (user) => user.seenMessages)
   @JoinTable({ name: 'seen_users' })
@@ -37,6 +38,6 @@ export class Message {
   @JoinColumn({ name: 'conversation_id' })
   conversation: Conversation;
 
-  @Column({ name: 'sender_name', nullable: false })
-  senderName: string;
+  // @Column({ name: 'sender_name', nullable: false })
+  // senderName: string;
 }
