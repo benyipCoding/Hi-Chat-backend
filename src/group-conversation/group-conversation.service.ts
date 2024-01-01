@@ -109,6 +109,7 @@ export class GroupConversationService {
           );
           res.lastMessage = lastMessage.length ? lastMessage[0] : null;
         }
+
         return (result as any[]).filter(
           (res) =>
             res.lastMessage || res.creator_id === (request.user as User).id,
@@ -120,7 +121,11 @@ export class GroupConversationService {
   }
 
   findGroupConversationById(groupConvId: number): Promise<GroupConversation> {
-    return this.groupConvRepository.findOneBy({ id: groupConvId });
+    return this.groupConvRepository
+      .createQueryBuilder('gc')
+      .leftJoinAndSelect('gc.members', 'members')
+      .where('gc.id = :convId', { convId: groupConvId })
+      .getOne();
   }
 
   updateLastMessage(groupConv: GroupConversation) {

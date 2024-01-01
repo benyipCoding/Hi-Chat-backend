@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -30,6 +32,26 @@ export class GroupMessageController {
     return this.groupMessageService.createGroupMessage(
       request,
       createMessageDto,
+    );
+  }
+
+  @Get('queryMessagesByGroupConvId/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get group messages' })
+  getMessagesByGroupConvId(@Param('id') groupConvId: number) {
+    return this.groupMessageService.getMessagesByGroupConvId(groupConvId);
+  }
+
+  @Post('updateMessageReadStatus/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'change group message readStatus' })
+  updateGroupMessageReadStatus(
+    @Req() request: Request,
+    @Param('id') groupMsgId: number,
+  ) {
+    return this.groupMessageService.updateGroupMessageReadStatus(
+      request,
+      groupMsgId,
     );
   }
 }
