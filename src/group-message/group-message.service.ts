@@ -12,6 +12,19 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class GroupMessageService {
+  private readonly queryUnreadGroupMessageByUserId: string = `SELECT gm.*
+  FROM group_message gm
+      LEFT JOIN seen_users_group sug ON gm.id = sug.groupMessageId AND sug.usersId = ?
+  WHERE
+      gm.group_conversation_id in (
+          SELECT
+              gc_user.groupConversationId
+          FROM gc_user
+          WHERE
+              gc_user.usersId = ?
+      )
+      AND sug.groupMessageId IS NULL;`;
+
   constructor(
     @InjectRepository(GroupMessage)
     private readonly groupMsgRepository: Repository<GroupMessage>,
@@ -67,7 +80,6 @@ export class GroupMessageService {
   }
 
   async updateGroupMessageReadStatus(request: Request, groupMsgId: number) {
-    console.log(groupMsgId);
     const currentUser = await this.userService.queryCurrentUser(
       request.user as User,
     );
@@ -78,5 +90,20 @@ export class GroupMessageService {
       .getOne();
     groupMsg.seenByUsers.push(currentUser);
     return this.groupMsgRepository.save(groupMsg);
+  }
+
+  async getUnreadGroupMessages(request: Request) {
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
+    );
+    const result = await this.groupMsgRepository.manager.transaction(
+      (entityManager) => {
+        return entityManager.query(this.queryUnreadGroupMessageByUserId, [
+          currentUser.id,
+          currentUser.id,
+        ]);
+      },
+    );
+    return result;
   }
 }

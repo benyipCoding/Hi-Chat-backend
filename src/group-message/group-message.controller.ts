@@ -54,4 +54,11 @@ export class GroupMessageController {
       groupMsgId,
     );
   }
+
+  @Get('getUnreadGroupMessages')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get unread group messages' })
+  getUnreadGroupMessages(@Req() request: Request) {
+    return this.groupMessageService.getUnreadGroupMessages(request);
+  }
 }

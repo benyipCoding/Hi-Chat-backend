@@ -97,7 +97,7 @@ export class GroupConversationService {
         const result = await entityManager.query(this.queryGroupByUserId, [
           (request.user as User).id,
         ]);
-
+        // handler for each group
         for (const res of result) {
           res.members = await entityManager.query(
             this.queryMembersByGroupConvId,
