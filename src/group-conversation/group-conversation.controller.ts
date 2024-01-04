@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
 import { Request } from 'express';
+import { UpdateGroupConversationDto } from './dto/update-group-conversation.dto';
 
 @Controller('group-conversation')
 @UseGuards(JwtAuthGuard)
@@ -38,5 +39,12 @@ export class GroupConversationController {
   @ApiOperation({ summary: 'get group conversation list' })
   getGroupConversationList(@Req() request: Request) {
     return this.groupConversationService.getGroupConversationList(request);
+  }
+
+  @Post('rename')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'rename group' })
+  renameGroup(@Body() dto: UpdateGroupConversationDto) {
+    return this.groupConversationService.renameGroup(dto);
   }
 }

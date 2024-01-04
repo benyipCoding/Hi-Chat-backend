@@ -12,6 +12,7 @@ import { User } from 'src/db/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroupConversation } from 'src/db/entities/group-conversation.entity';
 import { Repository } from 'typeorm';
+import { UpdateGroupConversationDto } from './dto/update-group-conversation.dto';
 
 @Injectable()
 export class GroupConversationService {
@@ -131,4 +132,6 @@ export class GroupConversationService {
   updateLastMessage(groupConv: GroupConversation) {
     return this.groupConvRepository.save(groupConv);
   }
+
+  async renameGroup(dto: UpdateGroupConversationDto) {}
 }
