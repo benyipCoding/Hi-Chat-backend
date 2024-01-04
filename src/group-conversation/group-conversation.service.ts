@@ -13,6 +13,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GroupConversation } from 'src/db/entities/group-conversation.entity';
 import { Repository } from 'typeorm';
 import { UpdateGroupConversationDto } from './dto/update-group-conversation.dto';
+import { GroupMessage } from 'src/db/entities/group-message.entity';
+// import { GroupMessageService } from 'src/group-message/group-message.service';
 
 @Injectable()
 export class GroupConversationService {
@@ -49,6 +51,8 @@ export class GroupConversationService {
     private readonly friendsService: FriendsService,
     @InjectRepository(GroupConversation)
     private readonly groupConvRepository: Repository<GroupConversation>,
+    @InjectRepository(GroupMessage)
+    private readonly groupMsgRepository: Repository<GroupMessage>,
   ) {}
 
   async createGroup(request: Request, gcDto: CreateGroupConversationDto) {
@@ -133,5 +137,54 @@ export class GroupConversationService {
     return this.groupConvRepository.save(groupConv);
   }
 
-  async renameGroup(dto: UpdateGroupConversationDto) {}
+  async renameGroup(dto: UpdateGroupConversationDto) {
+    const group = await this.groupConvRepository.findOneByOrFail({
+      id: dto.groupConvId,
+    });
+
+    group.name = dto.groupName;
+    return this.groupConvRepository.save(group);
+  }
+
+  async deleteGroup(request: Request, dto: UpdateGroupConversationDto) {
+    const currentUser = await this.userService.queryCurrentUser(
+      request.user as User,
+    );
+
+    const group = await this.groupConvRepository
+      .createQueryBuilder('gc')
+      .leftJoinAndSelect('gc.creator', 'creator')
+      .where('gc.id = :id', { id: dto.groupConvId })
+      .getOne();
+
+    if (group.creator.id !== currentUser.id) {
+      throw new BadRequestException(
+        'Only the creator of the group can remove.',
+      );
+    }
+    await this.deleteAllMessagesByGroupConvId(group.id);
+    return this.groupConvRepository.delete(group.id);
+  }
+
+  async getMessagesByGroupConvId(groupConvId: number) {
+    const messages = await this.groupMsgRepository
+      .createQueryBuilder('gm')
+      .leftJoin('gm.groupConversation', 'groupConversation')
+      .where('gm.groupConversation.id = :convId', { convId: groupConvId })
+      .getMany();
+
+    return messages;
+  }
+
+  deleteAllMessagesByGroupConvId(groupConvId: number) {
+    return this.groupMsgRepository.manager.transaction(async () => {
+      const messages = await this.getMessagesByGroupConvId(groupConvId);
+      const promiseList: Promise<any>[] = [];
+      for (const msg of messages) {
+        promiseList.push(this.groupMsgRepository.remove(msg));
+      }
+      await Promise.all(promiseList);
+      return;
+    });
+  }
 }

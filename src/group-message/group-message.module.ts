@@ -14,5 +14,6 @@ import { GroupConversationModule } from 'src/group-conversation/group-conversati
   ],
   controllers: [GroupMessageController],
   providers: [GroupMessageService],
+  exports: [GroupMessageService],
 })
 export class GroupMessageModule {}

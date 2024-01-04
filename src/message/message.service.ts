@@ -73,7 +73,7 @@ export class MessageService {
 
   async queryMessagesByConversation(
     conversationId: number,
-    limit: number = 30,
+    limit: number = 50,
   ) {
     const conversation = await this.conversationRepository.findOneOrFail({
       where: { id: conversationId },

@@ -47,4 +47,14 @@ export class GroupConversationController {
   renameGroup(@Body() dto: UpdateGroupConversationDto) {
     return this.groupConversationService.renameGroup(dto);
   }
+
+  @Post('delete-group')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'delete group' })
+  deleteGroup(
+    @Req() request: Request,
+    @Body() dto: UpdateGroupConversationDto,
+  ) {
+    return this.groupConversationService.deleteGroup(request, dto);
+  }
 }

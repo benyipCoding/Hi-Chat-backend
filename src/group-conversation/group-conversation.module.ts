@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GroupConversation } from 'src/db/entities/group-conversation.entity';
 import { UserModule } from 'src/user/user.module';
 import { FriendsModule } from 'src/friends/friends.module';
+import { GroupMessage } from 'src/db/entities/group-message.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([GroupConversation]),
+    TypeOrmModule.forFeature([GroupConversation, GroupMessage]),
     UserModule,
     FriendsModule,
   ],

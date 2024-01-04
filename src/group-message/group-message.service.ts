@@ -73,7 +73,7 @@ export class GroupMessageService {
       .leftJoinAndSelect('gm.sender', 'sender')
       .where('gm.groupConversation.id = :convId', { convId: groupConvId })
       .orderBy('gm.id', 'DESC')
-      .limit(30)
+      .limit(50)
       .getMany();
 
     return messages;
