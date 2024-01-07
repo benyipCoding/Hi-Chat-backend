@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { Message } from './message.entity';
 import { Gender } from '../types';
-import { Nickname } from './nickName.entity';
+import { Nickname } from './nickname.entity';
 import { GroupConversation } from './group-conversation.entity';
 import { GroupMessage } from './group-message.entity';
 

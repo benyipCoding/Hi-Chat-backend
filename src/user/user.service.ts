@@ -12,7 +12,7 @@ import { hashPassword } from 'src/utils/helpers';
 import { Request } from 'express';
 import { Friendship } from 'src/db/entities/friendship.entity';
 import { ChangeNicknameDto } from './dto/change-nickname.dto';
-import { Nickname } from 'src/db/entities/nickName.entity';
+import { Nickname } from 'src/db/entities/nickname.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()

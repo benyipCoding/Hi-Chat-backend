@@ -26,7 +26,7 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        const isDev = configService.get('STAGE') === 'dev';
+        // const isDev = configService.get('STAGE') === 'dev';
 
         return {
           type: 'mysql',
@@ -36,7 +36,8 @@ const envFilePath = `.env.stage.${process.env.STAGE}`;
           port: configService.get('DB_PORT'),
           database: configService.get('DB_DATABASE'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: isDev,
+          // synchronize: isDev,
+          synchronize: true,
           autoLoadEntities: true,
         };
       },
