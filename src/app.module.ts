@@ -14,8 +14,10 @@ import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
 import { GroupConversationModule } from './group-conversation/group-conversation.module';
 import { GroupMessageModule } from './group-message/group-message.module';
+import { join } from 'path';
 
-const envFilePath = `.env.stage.${process.env.STAGE}`;
+const envFilePath = join(__dirname, `../.env.stage.${process.env.STAGE}`);
+
 @Module({
   imports: [
     ConfigModule.forRoot({
