@@ -12,7 +12,16 @@ import { Server } from 'socket.io';
 import { AuthSocket } from './interface';
 import { SocketEvent } from 'src/utils/enum';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway(3002, {
+  cors: {
+    origin: [
+      'http://10.7.46.174:3001',
+      'http://139.199.77.238',
+      'http://192.168.0.101:3001',
+    ],
+    credentials: true,
+  },
+})
 // @UseGuards(JwtAuthGuard)
 export class WebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
