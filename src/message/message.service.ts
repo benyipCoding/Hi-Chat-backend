@@ -83,7 +83,7 @@ export class MessageService {
       .createQueryBuilder('m')
       .leftJoinAndSelect('m.sender', 'sender')
       .where('m.conversation_id = :convId', { convId: conversation.id })
-      .orderBy('m.create_at', 'DESC')
+      .orderBy('m.id', 'DESC')
       .limit(limit)
       .getMany();
 

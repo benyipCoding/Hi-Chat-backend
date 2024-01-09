@@ -12,7 +12,7 @@ import { Server } from 'socket.io';
 import { AuthSocket } from './interface';
 import { SocketEvent } from 'src/utils/enum';
 
-@WebSocketGateway(3002, {
+@WebSocketGateway(3001, {
   cors: {
     origin: [
       'http://10.7.46.174:3001',
